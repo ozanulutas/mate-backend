@@ -10,5 +10,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// @TODO: optional alanları düzenle
+
+model Sex {
+  id   Int    @id @default(autoincrement())
+  name String
+  User User[]
+}
+
 model User {
+  id        Int       @id @default(autoincrement())
+  createAt  DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  firstname String?
+  lastname  String?
+  email     String?   @unique
+  username  String
+  passport  String
+  info      String?
+  latLon    String?
+  birthday  DateTime?
+  city      String? // @TODO: ayrı tablodan al
+  country   String? // @TODO: ayrı tablodan al
+  sex       Sex?      @relation(fields: [sexId], references: [id])
+  sexId     Int?
 }
