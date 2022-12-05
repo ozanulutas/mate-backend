@@ -15,23 +15,60 @@ datasource db {
 model Sex {
   id   Int    @id @default(autoincrement())
   name String
-  User User[]
+
+  user User[]
+
+  @@map("sex")
 }
 
+model Category {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+
+  // 1:n
+  // parentId Int?       @map("parent_id")
+  // parent   Category?  @relation("parent", fields: [parentId], references: [id])
+  // category Category[] @relation("parent")
+
+  // n:m
+  // parent             Category[]        @relation("parent")
+  // category           Category[]        @relation("parent")
+  parent CategoryRelation[] @relation("parent")
+  child  CategoryRelation[] @relation("child")
+
+  @@map("category")
+}
+
+model CategoryRelation {
+  id Int @id @default(autoincrement())
+
+  parent   Category? @relation("parent", fields: [parentId], references: [id])
+  parentId Int?      @map("parent_id")
+  child    Category? @relation("child", fields: [childId], references: [id])
+  childId  Int?      @map("child_id")
+
+  @@map("category_relation")
+}
+
+// @TODO: optional alanları düzenle
 model User {
   id        Int       @id @default(autoincrement())
   createAt  DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  firstname String?
-  lastname  String?
+  firstName String?   @map("first_name")
+  lastName  String?   @map("last_name")
   email     String?   @unique
   username  String
   passport  String
   info      String?
-  latLon    String?
+  latLon    String?   @map("lat_lon")
   birthday  DateTime?
   city      String? // @TODO: ayrı tablodan al
   country   String? // @TODO: ayrı tablodan al
-  sex       Sex?      @relation(fields: [sexId], references: [id])
-  sexId     Int?
+
+  sexId Int? @map("sex_id")
+  sex   Sex? @relation(fields: [sexId], references: [id])
+
+  @@map("user")
 }
