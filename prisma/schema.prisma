@@ -23,8 +23,8 @@ model Sex {
 
 model Category {
   id          Int      @id @default(autoincrement())
-  createAt    DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createAt    DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
   name        String
   description String?
   // 1:n
@@ -45,8 +45,8 @@ model Category {
 // https://www.prisma.io/docs/concepts/components/prisma-schema/relations/self-relations#many-to-many-self-relations
 model CategoryRelation {
   id        Int      @id @default(autoincrement())
-  createAt  DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createAt  DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   parent   Category? @relation("parent", fields: [parentId], references: [id])
   parentId Int?      @map("parent_id")
@@ -59,8 +59,8 @@ model CategoryRelation {
 // @TODO: optional alanları düzenle
 model User {
   id        Int       @id @default(autoincrement())
-  createAt  DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createAt  DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
   firstName String?   @map("first_name")
   lastName  String?   @map("last_name")
   email     String?   @unique
@@ -83,20 +83,20 @@ model User {
 
 model Follow {
   id          Int      @id @default(autoincrement())
-  createAt    DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createAt    DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
   follower    User     @relation("follower", fields: [followerId], references: [id])
-  followerId  Int
+  followerId  Int      @map("follower_id")
   following   User     @relation("following", fields: [followingId], references: [id])
-  followingId Int
+  followingId Int      @map("following_id")
 
   @@map("follow")
 }
 
 model UserCategory {
   id         Int      @id @default(autoincrement())
-  createAt   DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createAt   DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
   user       User     @relation(fields: [userId], references: [id])
   userId     Int      @map("user_id")
   category   Category @relation(fields: [categoryId], references: [id])
