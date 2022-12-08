@@ -40,6 +40,7 @@ model Category {
   @@map("category")
 }
 
+// https://www.prisma.io/docs/concepts/components/prisma-schema/relations/self-relations#many-to-many-self-relations
 model CategoryRelation {
   id Int @id @default(autoincrement())
 
@@ -67,8 +68,20 @@ model User {
   city      String? // @TODO: ayrı tablodan al
   country   String? // @TODO: ayrı tablodan al
 
-  sexId Int? @map("sex_id")
-  sex   Sex? @relation(fields: [sexId], references: [id])
+  sexId      Int?     @map("sex_id")
+  sex        Sex?     @relation(fields: [sexId], references: [id])
+  followedBy Follow[] @relation("following")
+  following  Follow[] @relation("follower")
 
   @@map("user")
+}
+
+model Follow {
+  id          Int  @id @default(autoincrement())
+  follower    User @relation("follower", fields: [followerId], references: [id])
+  followerId  Int
+  following   User @relation("following", fields: [followingId], references: [id])
+  followingId Int
+
+  @@map("follow")
 }
