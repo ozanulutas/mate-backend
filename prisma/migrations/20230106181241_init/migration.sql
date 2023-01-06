@@ -1,9 +1,9 @@
 -- CreateTable
-CREATE TABLE "sex" (
+CREATE TABLE "gender" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
 
-    CONSTRAINT "sex_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "gender_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -43,7 +43,7 @@ CREATE TABLE "user" (
     "birthday" TIMESTAMP(3),
     "city" TEXT,
     "country" TEXT,
-    "sex_id" INTEGER,
+    "gender_id" INTEGER,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
@@ -80,7 +80,7 @@ ALTER TABLE "category_relation" ADD CONSTRAINT "category_relation_parent_id_fkey
 ALTER TABLE "category_relation" ADD CONSTRAINT "category_relation_child_id_fkey" FOREIGN KEY ("child_id") REFERENCES "category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "user" ADD CONSTRAINT "user_sex_id_fkey" FOREIGN KEY ("sex_id") REFERENCES "sex"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "user" ADD CONSTRAINT "user_gender_id_fkey" FOREIGN KEY ("gender_id") REFERENCES "gender"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "follow" ADD CONSTRAINT "follow_follower_id_fkey" FOREIGN KEY ("follower_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

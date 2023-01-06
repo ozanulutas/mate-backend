@@ -12,13 +12,13 @@ datasource db {
 
 // @TODO: optional alanları düzenle
 
-model Sex {
+model Gender {
   id   Int    @id @default(autoincrement())
   name String
 
   user User[]
 
-  @@map("sex")
+  @@map("gender")
 }
 
 model Category {
@@ -72,8 +72,8 @@ model User {
   city      String? // @TODO: ayrı tablodan al
   country   String? // @TODO: ayrı tablodan al
 
-  sexId      Int?           @map("sex_id")
-  sex        Sex?           @relation(fields: [sexId], references: [id])
+  genderId   Int?           @map("gender_id")
+  gender     Gender?        @relation(fields: [genderId], references: [id])
   followedBy Follow[]       @relation("following")
   following  Follow[]       @relation("follower")
   category   UserCategory[]

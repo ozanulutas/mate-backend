@@ -1,10 +1,10 @@
-import { sex } from './sex';
+import { gender } from './gender';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
   try {
-    await sex();
+    await gender();
   } catch (e) {
     console.error(e);
     process.exit(1);

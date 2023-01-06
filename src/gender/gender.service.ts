@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
-export class SexService {
+export class GenderService {
   constructor(private prisma: PrismaService) {}
 
-  getSexes() {
-    return this.prisma.sex.findMany();
+  getGenders() {
+    return this.prisma.gender.findMany();
   }
 }
