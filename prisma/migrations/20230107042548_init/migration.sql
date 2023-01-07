@@ -33,16 +33,18 @@ CREATE TABLE "user" (
     "id" SERIAL NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "username" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "email" TEXT,
     "first_name" TEXT,
     "last_name" TEXT,
-    "email" TEXT,
-    "username" TEXT NOT NULL,
-    "passport" TEXT NOT NULL,
-    "info" TEXT,
-    "lat_lon" TEXT,
+    "gsm" TEXT,
+    "country_code" TEXT,
     "birthday" TIMESTAMP(3),
     "city" TEXT,
     "country" TEXT,
+    "info" TEXT,
+    "lat_lon" TEXT,
     "gender_id" INTEGER,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
@@ -72,6 +74,9 @@ CREATE TABLE "user_category" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_gsm_key" ON "user"("gsm");
 
 -- AddForeignKey
 ALTER TABLE "category_relation" ADD CONSTRAINT "category_relation_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
