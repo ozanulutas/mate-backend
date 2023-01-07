@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { GenderRepository } from './gender.repository';
 
 @Injectable()
 export class GenderService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private genderRepository: GenderRepository) {}
 
   getGenders() {
-    return this.prisma.gender.findMany();
+    return this.genderRepository.getGenders();
   }
 }
