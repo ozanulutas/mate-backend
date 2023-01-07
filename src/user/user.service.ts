@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { CreateUserDto } from './dto';
+import { CreateUserDto, GetUserByEmailDto } from './dto';
 import { UserRepository } from './user.repository';
 
 @Injectable()
@@ -10,6 +10,10 @@ export class UserService {
 
   getUsers() {
     return this.userRepository.getUsers();
+  }
+
+  getUserByEmail(getUserByEmailDto: GetUserByEmailDto) {
+    return this.userRepository.getUserByEmail(getUserByEmailDto);
   }
 
   async createUser(createUserDto: CreateUserDto) {
