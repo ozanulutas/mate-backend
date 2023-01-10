@@ -27,14 +27,7 @@ model Category {
   updatedAt   DateTime @updatedAt @map("updated_at")
   name        String
   description String?
-  // 1:n
-  // parentId Int?       @map("parent_id")
-  // parent   Category?  @relation("parent", fields: [parentId], references: [id])
-  // category Category[] @relation("parent")
 
-  // n:m
-  // parent             Category[]        @relation("parent")
-  // category           Category[]        @relation("parent")
   parent CategoryRelation[] @relation("parent")
   child  CategoryRelation[] @relation("child")
   user   UserCategory[]
@@ -49,7 +42,7 @@ model CategoryRelation {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   parent   Category? @relation("parent", fields: [parentId], references: [id])
-  parentId Int?      @map("parent_id")
+  parentId Int?      @map("parent_id")  // kendisi
   child    Category? @relation("child", fields: [childId], references: [id])
   childId  Int?      @map("child_id")
 

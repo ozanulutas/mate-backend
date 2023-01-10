@@ -2,6 +2,10 @@ import { PrismaClient } from '@prisma/client';
 
 export async function gender(prisma: PrismaClient) {
   await prisma.gender.deleteMany();
-  await prisma.gender.create({ data: { name: 'Male', id: 1 } });
-  await prisma.gender.create({ data: { name: 'Female', id: 2 } });
+  await prisma.gender.createMany({
+    data: [
+      { id: 1, name: 'Male' },
+      { id: 2, name: 'Female' },
+    ],
+  });
 }

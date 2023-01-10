@@ -35,7 +35,7 @@ CREATE TABLE "user" (
     "updated_at" TIMESTAMP(3) NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "email" TEXT,
+    "email" TEXT NOT NULL,
     "first_name" TEXT,
     "last_name" TEXT,
     "gsm" TEXT,
