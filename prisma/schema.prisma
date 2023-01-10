@@ -22,29 +22,31 @@ model Gender {
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id          Int     @id @default(autoincrement())
   name        String
   description String?
 
-  parent CategoryRelation[] @relation("parent")
-  child  CategoryRelation[] @relation("child")
-  user   UserCategory[]
+  category      CategoryRelation[] @relation("category")
+  childCategory CategoryRelation[] @relation("childCategory")
+  user          UserCategory[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("category")
 }
 
 // https://www.prisma.io/docs/concepts/components/prisma-schema/relations/self-relations#many-to-many-self-relations
 model CategoryRelation {
-  id        Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
+  category        Category? @relation("category", fields: [categoryId], references: [id])
+  categoryId      Int?      @map("category_id") // kendisi
+  childCategory   Category? @relation("childCategory", fields: [childCategoryId], references: [id])
+  childCategoryId Int?      @map("child_category_id")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  parent   Category? @relation("parent", fields: [parentId], references: [id])
-  parentId Int?      @map("parent_id")  // kendisi
-  child    Category? @relation("child", fields: [childId], references: [id])
-  childId  Int?      @map("child_id")
 
   @@map("category_relation")
 }
@@ -52,8 +54,6 @@ model CategoryRelation {
 // @TODO: optional alanları düzenle
 model User {
   id          Int       @id @default(autoincrement())
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
   username    String
   password    String
   email       String    @unique
@@ -73,29 +73,34 @@ model User {
   following  Follow[]       @relation("follower")
   category   UserCategory[]
 
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   @@map("user")
 }
 
 model Follow {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  follower    User     @relation("follower", fields: [followerId], references: [id])
-  followerId  Int      @map("follower_id")
-  following   User     @relation("following", fields: [followingId], references: [id])
-  followingId Int      @map("following_id")
+  id          Int  @id @default(autoincrement())
+  follower    User @relation("follower", fields: [followerId], references: [id])
+  followerId  Int  @map("follower_id")
+  following   User @relation("following", fields: [followingId], references: [id])
+  followingId Int  @map("following_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("follow")
 }
 
 model UserCategory {
   id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
   user       User     @relation(fields: [userId], references: [id])
   userId     Int      @map("user_id")
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int      @map("category_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("user_category")
 }
