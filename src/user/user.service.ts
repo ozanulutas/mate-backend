@@ -16,6 +16,18 @@ export class UserService {
     return this.userRepository.getUserByEmail(email);
   }
 
+  async getUserById(id: number) {
+    const user = await this.userRepository.getUserById(id);
+    const normalizedUser = {
+      ...user,
+      userCategory: user.userCategory.map(({ category }) => category),
+      following: user.following.map(({ following }) => following),
+      followedBy: user.followedBy.map(({ follower }) => follower),
+    };
+
+    return normalizedUser;
+  }
+
   async createUser(createUserDto: CreateUserDto) {
     const passwordHash = await bcrypt.hash(createUserDto.password, 10);
 

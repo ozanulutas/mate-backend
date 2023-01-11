@@ -22,6 +22,47 @@ export class UserRepository {
     });
   }
 
+  getUserById(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        userCategory: {
+          select: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        following: {
+          select: {
+            following: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+        followedBy: {
+          select: {
+            follower: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   createUser(createUserDto: CreateUserDto) {
     return this.prisma.user.create({
       data: createUserDto,
