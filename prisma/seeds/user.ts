@@ -17,6 +17,12 @@ export async function user(prisma: PrismaClient) {
         email: 'onur@mail.com',
         password: await bcrypt.hash('123', 10),
       },
+      {
+        id: 3,
+        username: 'ramoş',
+        email: 'ramos@mail.com',
+        password: await bcrypt.hash('123', 10),
+      },
     ],
   });
 }
