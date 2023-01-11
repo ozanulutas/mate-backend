@@ -18,6 +18,7 @@ export class UserService {
 
   async getUserById(id: number) {
     const user = await this.userRepository.getUserById(id);
+
     const normalizedUser = {
       ...user,
       userCategory: user.userCategory.map(({ category }) => category),
