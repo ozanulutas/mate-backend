@@ -15,6 +15,7 @@ type CreateModalParams = {
   };
 };
 
+// @TODO: change name to toast
 export const createNotification = (params: CreateNotificationParams) => ({
   notification: {
     text: '',
