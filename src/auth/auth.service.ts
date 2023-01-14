@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
 import { UserService } from 'src/user/user.service';
+import { createNotification } from 'src/utils/feedback/feedback';
 import { LoginDto, RegisterDto } from './dto';
 
 @Injectable()
@@ -30,7 +31,10 @@ export class AuthService {
       throw new ForbiddenException('Credentials incorrect');
     }
 
-    return this.signToken(user.id, user.email);
+    return {
+      data: await this.signToken(user.id, user.email),
+      ...createNotification({ text: 'hey' }),
+    };
   }
 
   async register(registerDto: RegisterDto) {
