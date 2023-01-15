@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
 import { UserService } from 'src/user/user.service';
-import { createToast } from 'src/config/feedback/feedback';
+import { createToast } from 'src/config/notification/notification';
 import { LoginDto, RegisterDto } from './dto';
 import { IncorrectCredentialsException } from 'src/config/exceptions';
 

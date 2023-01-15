@@ -1,4 +1,4 @@
-import { ToastType } from './feedback.enum';
+import { ToastType } from './notification.enum';
 
 type CreateToastParams = {
   text: string;

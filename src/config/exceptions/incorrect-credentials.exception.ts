@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { createToast } from '../feedback/feedback';
+import { createToast } from '../notification/notification';
 
 export class IncorrectCredentialsException extends HttpException {
   constructor() {
