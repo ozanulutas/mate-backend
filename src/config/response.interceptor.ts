@@ -16,17 +16,17 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     context: ExecutionContext,
     next: CallHandler<
       // @TODO: type this
-      T & { notification: any; popup: any; data: any; actionCode: any }
+      T & { toast: any; popup: any; data: any; actionCode: any }
     >,
   ): Observable<Response<T>> | Promise<Observable<Response<T>>> {
     return next.handle().pipe(
       map((responsePayload) => {
-        const { data, notification, popup, actionCode } = responsePayload;
+        const { data, toast, popup, actionCode } = responsePayload;
 
         return {
           data: data ?? responsePayload,
           result: {
-            notification,
+            toast,
             popup,
             actionCode,
           },

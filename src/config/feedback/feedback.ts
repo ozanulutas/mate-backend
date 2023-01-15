@@ -1,8 +1,8 @@
-import { NotificationType } from './feedback.enum';
+import { ToastType } from './feedback.enum';
 
-type CreateNotificationParams = {
+type CreateToastParams = {
   text: string;
-  type?: NotificationType;
+  type?: ToastType;
 };
 
 type CreateModalParams = {
@@ -16,10 +16,10 @@ type CreateModalParams = {
 };
 
 // @TODO: change name to toast
-export const createNotification = (params: CreateNotificationParams) => ({
-  notification: {
+export const createToast = (params: CreateToastParams) => ({
+  toast: {
     text: '',
-    type: NotificationType.SUCCESS,
+    type: ToastType.SUCCESS,
     ...params,
   },
 });

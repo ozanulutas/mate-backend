@@ -1,4 +1,4 @@
-export enum NotificationType {
+export enum ToastType {
   SUCCESS,
   WARNING,
   ERROR,

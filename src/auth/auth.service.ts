@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
 import { UserService } from 'src/user/user.service';
-import { createNotification } from 'src/config/feedback/feedback';
+import { createToast } from 'src/config/feedback/feedback';
 import { LoginDto, RegisterDto } from './dto';
 import { IncorrectCredentialsException } from 'src/config/exceptions';
 
@@ -34,7 +34,7 @@ export class AuthService {
 
     return {
       data: await this.signToken(user.id, user.email),
-      ...createNotification({ text: 'hey' }),
+      ...createToast({ text: 'hey' }),
     };
   }
 
