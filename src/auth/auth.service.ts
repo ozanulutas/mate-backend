@@ -33,8 +33,13 @@ export class AuthService {
     }
 
     return {
-      data: await this.signToken(user.id, user.email),
-      ...createToast({ text: 'hey' }),
+      data: {
+        ...(await this.signToken(user.id, user.email)),
+        user: {
+          username: user.username,
+        },
+      },
+      ...createToast({ text: `Welcome ${user.username}` }),
     };
   }
 
