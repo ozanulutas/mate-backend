@@ -1,11 +1,12 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
 import { UserService } from 'src/user/user.service';
-import { createNotification } from 'src/utils/feedback/feedback';
+import { createNotification } from 'src/config/feedback/feedback';
 import { LoginDto, RegisterDto } from './dto';
+import { IncorrectCredentialsException } from 'src/config/exceptions';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
     const user = await this.userService.getUserByEmail(loginDto.email);
 
     if (!user) {
-      throw new ForbiddenException('Credentials incorrect');
+      throw new IncorrectCredentialsException();
     }
 
     const isPasswordMatches = await bcrypt.compare(
@@ -28,7 +29,7 @@ export class AuthService {
     );
 
     if (!isPasswordMatches) {
-      throw new ForbiddenException('Credentials incorrect');
+      throw new IncorrectCredentialsException();
     }
 
     return {
