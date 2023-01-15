@@ -5,7 +5,7 @@ type CreateToastParams = {
   type?: ToastType;
 };
 
-type CreateModalParams = {
+type CreatePopupParams = {
   text: string;
   positiveButton?: {
     text: string;
@@ -24,13 +24,15 @@ export const createToast = (params: CreateToastParams) => ({
   },
 });
 
-export const createModal = (params: CreateModalParams) => ({
-  text: '',
-  positiveButton: {
-    text: 'Okeyto',
+export const createPopup = (params: CreatePopupParams) => ({
+  popup: {
+    text: '',
+    positiveButton: {
+      text: 'Okeyto',
+    },
+    negativeButton: {
+      text: 'Cancel',
+    },
+    ...params,
   },
-  negativeButton: {
-    text: 'Cancel',
-  },
-  ...params,
 });
