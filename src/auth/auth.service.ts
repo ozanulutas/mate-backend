@@ -46,7 +46,15 @@ export class AuthService {
   async register(registerDto: RegisterDto) {
     const user = await this.userService.createUser(registerDto);
 
-    return this.signToken(user.id, user.email);
+    return {
+      data: {
+        ...(await this.signToken(user.id, user.email)),
+        user: {
+          username: user.username,
+        },
+      },
+      ...createToast({ text: `Welcome ${user.username}` }),
+    };
   }
 
   async signToken(userId: number, email: string) {

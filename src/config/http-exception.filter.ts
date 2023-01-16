@@ -21,5 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       statusCode: status,
       error: exception.name,
     });
+
+    console.error({ exception });
   }
 }

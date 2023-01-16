@@ -1,8 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { CreateUserDto } from './dto';
 import { UserRepository } from './user.repository';
+import { CredentialsTakenException } from 'src/config/exceptions';
 
 @Injectable()
 export class UserService {
@@ -40,7 +41,7 @@ export class UserService {
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new ForbiddenException('Credantials taken');
+          throw new CredentialsTakenException();
         }
       }
 

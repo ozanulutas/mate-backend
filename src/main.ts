@@ -1,7 +1,9 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+
 import { AppModule } from './app.module';
+import { ValidationException } from './config/exceptions';
 import { HttpExceptionFilter } from './config/http-exception.filter';
 import { ResponseInterceptor } from './config/response.interceptor';
 
@@ -10,7 +12,13 @@ async function bootstrap() {
   const config = new ConfigService();
 
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      disableErrorMessages: true,
+      exceptionFactory: () => new ValidationException(),
+    }),
+  );
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
 
