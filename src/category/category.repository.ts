@@ -13,6 +13,10 @@ export class CategoryRepository {
           mode: 'insensitive',
         },
       },
+      select: {
+        id: true,
+        name: true,
+      },
     });
   }
 }
