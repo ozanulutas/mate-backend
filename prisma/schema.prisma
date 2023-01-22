@@ -55,15 +55,13 @@ model User {
   username    String
   password    String
   email       String    @unique
-  firstName   String?   @map("first_name")
-  lastName    String?   @map("last_name")
   gsm         String?   @unique
   countryCode String?   @map("country_code")
   birthday    DateTime?
   city        String? // @TODO: ayrı tablodan al
   country     String? // @TODO: ayrı tablodan al
-  info        String?
   latLon      String?   @map("lat_lon")
+  info        String?
   genderId    Int?      @map("gender_id")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
