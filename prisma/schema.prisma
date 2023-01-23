@@ -58,20 +58,32 @@ model User {
   gsm         String?   @unique
   countryCode String?   @map("country_code")
   birthday    DateTime?
-  city        String? // @TODO: ayrı tablodan al
-  country     String? // @TODO: ayrı tablodan al
-  latLon      String?   @map("lat_lon")
   info        String?
   genderId    Int?      @map("gender_id")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
   gender       Gender?        @relation(fields: [genderId], references: [id])
+  Location     Location[]
   followedBy   Follow[]       @relation("following") // @TODO: rename -> follower
   following    Follow[]       @relation("follower") // @TODO: rename -> followings
   userCategory UserCategory[] // @TODO: rename -> userCategories
 
   @@map("user")
+}
+
+model Location {
+  id        Int      @id @default(autoincrement())
+  latLon    String   @map("lat_lon")
+  city      String? // @TODO: ayrı tablodan al
+  country   String? // @TODO: ayrı tablodan al
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  userId    Int      @map("user_id")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("location")
 }
 
 model Follow {
