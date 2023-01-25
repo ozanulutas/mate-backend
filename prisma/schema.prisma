@@ -74,6 +74,7 @@ model User {
 
 model Location {
   id        Int      @id @default(autoincrement())
+  name      String   @map("name")
   latLon    String   @map("lat_lon")
   city      String? // @TODO: ayrı tablodan al
   country   String? // @TODO: ayrı tablodan al
