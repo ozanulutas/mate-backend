@@ -16,7 +16,10 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       disableErrorMessages: true,
-      exceptionFactory: () => new ValidationException(),
+      exceptionFactory: (errors) => {
+        console.error(errors);
+        return new ValidationException();
+      },
     }),
   );
   app.useGlobalInterceptors(new ResponseInterceptor());

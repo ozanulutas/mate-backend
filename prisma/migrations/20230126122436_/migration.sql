@@ -34,20 +34,29 @@ CREATE TABLE "user" (
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "first_name" TEXT,
-    "last_name" TEXT,
     "gsm" TEXT,
     "country_code" TEXT,
     "birthday" TIMESTAMP(3),
-    "city" TEXT,
-    "country" TEXT,
     "info" TEXT,
-    "lat_lon" TEXT,
     "gender_id" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "location" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "lat_lon" TEXT NOT NULL,
+    "city" TEXT,
+    "country" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+    "user_id" INTEGER NOT NULL,
+
+    CONSTRAINT "location_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -86,6 +95,9 @@ ALTER TABLE "category_relation" ADD CONSTRAINT "category_relation_child_category
 
 -- AddForeignKey
 ALTER TABLE "user" ADD CONSTRAINT "user_gender_id_fkey" FOREIGN KEY ("gender_id") REFERENCES "gender"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "location" ADD CONSTRAINT "location_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "follow" ADD CONSTRAINT "follow_follower_id_fkey" FOREIGN KEY ("follower_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

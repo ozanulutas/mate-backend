@@ -64,7 +64,7 @@ model User {
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
   gender       Gender?        @relation(fields: [genderId], references: [id])
-  Location     Location[]
+  location     Location[]
   followedBy   Follow[]       @relation("following") // @TODO: rename -> follower
   following    Follow[]       @relation("follower") // @TODO: rename -> followings
   userCategory UserCategory[] // @TODO: rename -> userCategories
