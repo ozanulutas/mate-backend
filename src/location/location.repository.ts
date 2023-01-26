@@ -14,4 +14,12 @@ export class LocationRepository {
       },
     });
   }
+
+  getLocations(userId: number) {
+    return this.prisma.location.findMany({
+      where: {
+        userId,
+      },
+    });
+  }
 }

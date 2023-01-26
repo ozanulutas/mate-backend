@@ -16,4 +16,8 @@ export class LocationService {
       ...createToast({ text: 'Location is added successfully.' }),
     };
   }
+
+  getLocations(userId: number) {
+    return this.locationRepository.getLocations(userId);
+  }
 }
