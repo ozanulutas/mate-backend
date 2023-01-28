@@ -11,9 +11,13 @@ export async function userCategory(prisma: PrismaClient) {
 
       { id: 5, userId: 2, categoryId: 1 },
       { id: 6, userId: 2, categoryId: 10 },
-      { id: 7, userId: 2, categoryId: 10 },
+      { id: 7, userId: 2, categoryId: 5 },
       { id: 8, userId: 2, categoryId: 15 },
       { id: 9, userId: 2, categoryId: 16 },
+
+      { id: 10, userId: 3, categoryId: 5 },
+      { id: 11, userId: 3, categoryId: 1 },
+      { id: 12, userId: 3, categoryId: 11 },
     ],
   });
 }

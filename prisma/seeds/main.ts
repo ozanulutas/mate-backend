@@ -4,6 +4,7 @@ import { categoryRelation } from './category-relation';
 import { follow } from './follow';
 import { gender } from './gender';
 import { location } from './location';
+import { selectedLocation } from './selected-location';
 import { user } from './user';
 import { userCategory } from './user-category';
 
@@ -15,6 +16,7 @@ async function main() {
     await user(prisma);
     await location(prisma);
     await category(prisma);
+    await selectedLocation(prisma);
     await categoryRelation(prisma);
     await userCategory(prisma);
     await follow(prisma);

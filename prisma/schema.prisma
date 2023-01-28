@@ -70,29 +70,42 @@ model User {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  gender       Gender?        @relation(fields: [genderId], references: [id])
-  location     Location[]
-  followedBy   Follow[]       @relation("following") // @TODO: rename -> follower
-  following    Follow[]       @relation("follower") // @TODO: rename -> followings
-  userCategory UserCategory[] // @TODO: rename -> userCategories
+  gender           Gender?           @relation(fields: [genderId], references: [id])
+  location         Location[]
+  followedBy       Follow[]          @relation("following") // @TODO: rename -> follower
+  following        Follow[]          @relation("follower") // @TODO: rename -> followings
+  userCategory     UserCategory[] // @TODO: rename -> userCategories
+  SelectedLocation SelectedLocation?
 
   @@map("user")
 }
 
 model Location {
   id          Int                                  @id @default(autoincrement())
+  userId      Int?                                 @map("user_id")
   name        String
   coordinates Unsupported("geometry(Point, 4326)")
   city        String? // @TODO: ayrı tablodan al
   country     String? // @TODO: ayrı tablodan al
-  userId      Int?                                 @map("user_id")
   createdAt   DateTime                             @default(now()) @map("created_at")
   updatedAt   DateTime?                            @updatedAt @map("updated_at")
 
-  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  SelectedLocation SelectedLocation?
 
   @@index([coordinates], name: "location_idx", type: Gist)
   @@map("location")
+}
+
+model SelectedLocation {
+  id         Int @id @default(autoincrement())
+  userId     Int @unique @map("user_id")
+  locationId Int @unique @map("location_id")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@map("selected_location")
 }
 
 model Follow {
