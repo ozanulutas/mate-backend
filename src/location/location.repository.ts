@@ -9,11 +9,8 @@ export class LocationRepository {
 
   createLocation(
     userId: number,
-    { name, coordinates }: CreateLocationDto,
+    { name, coordinates: [lon, lat] }: CreateLocationDto,
   ): PrismaPromise<void> {
-    const [lon, lat] = coordinates;
-    console.log({ lon, lat });
-
     return this.prisma
       .$queryRaw`INSERT INTO location (user_id, name, coordinates) VALUES(${userId}, ${name}, ST_MakePoint(${lon}, ${lat}))`;
   }

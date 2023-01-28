@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { CreateUserDto } from './dto';
+import { CreateUserDto, SearchDto } from './dto';
 import { UserRepository } from './user.repository';
 import { CredentialsTakenException } from 'src/config/exceptions';
 
@@ -28,6 +28,10 @@ export class UserService {
     };
 
     return normalizedUser;
+  }
+
+  search(searchDto: SearchDto) {
+    return this.userRepository.search(searchDto);
   }
 
   async createUser(createUserDto: CreateUserDto) {

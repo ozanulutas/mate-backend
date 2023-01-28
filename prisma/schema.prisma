@@ -87,6 +87,7 @@ model Location {
   coordinates Unsupported("geometry(Point, 4326)")
   city        String? // @TODO: ayrı tablodan al
   country     String? // @TODO: ayrı tablodan al
+  info        String?
   createdAt   DateTime                             @default(now()) @map("created_at")
   updatedAt   DateTime?                            @updatedAt @map("updated_at")
 

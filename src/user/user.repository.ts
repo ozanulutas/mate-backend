@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto } from './dto';
+import { CreateUserDto, SearchDto } from './dto';
 
 @Injectable()
 export class UserRepository {
@@ -61,6 +62,25 @@ export class UserRepository {
         },
       },
     });
+  }
+
+  search({ lon, lat, categories, distance }: SearchDto) {
+    return this.prisma.$queryRaw`
+      SELECT 
+        u.id userId, u.username, CAST(ST_ASGEOJSON(l.coordinates) AS json) geojson, ARRAY_AGG(c.name) categories
+      FROM
+        location l JOIN "user" u ON l.user_id = u.id
+        JOIN selected_location sl ON sl.location_id = l.id
+        JOIN user_category uc ON u.id = uc.user_id
+        JOIN category c ON c.id = uc.category_id
+      WHERE
+        ST_DWithin((l.coordinates)::geography, ST_MakePoint(${lon}, ${lat}), ${distance}) 
+        AND uc.category_id IN (${Prisma.join(categories)})
+      GROUP BY u.id, l.name, l.coordinates
+      ORDER BY
+        ST_Distance((l.coordinates)::geography, ST_MakePoint(${lon}, ${lat})),
+        count(uc.category_id) DESC;
+    `;
   }
 
   createUser(createUserDto: CreateUserDto) {

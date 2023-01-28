@@ -13,4 +13,5 @@ export async function location(prisma: PrismaClient) {
     (7, 3, 'Nusratlı', ST_MakePoint(27.441427840521293, 40.95312954570596)), 
     (8, 3, 'Perşembe Pazarı', ST_MakePoint(27.503875286717655, 40.976654713719626))
   `;
+  await prisma.$queryRaw`SELECT setval('location_id_seq', (SELECT max(id) FROM location))`;
 }
