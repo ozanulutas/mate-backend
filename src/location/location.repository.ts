@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Location, PrismaPromise } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateLocationDto } from './dto';
 
@@ -6,20 +7,19 @@ import { CreateLocationDto } from './dto';
 export class LocationRepository {
   constructor(private prisma: PrismaService) {}
 
-  createLocation(userId: number, createLocationDto: CreateLocationDto) {
-    return this.prisma.location.create({
-      data: { userId, ...createLocationDto },
-      select: {
-        id: true,
-      },
-    });
+  createLocation(
+    userId: number,
+    { name, coordinates }: CreateLocationDto,
+  ): PrismaPromise<void> {
+    const [lon, lat] = coordinates;
+    console.log({ lon, lat });
+
+    return this.prisma
+      .$queryRaw`INSERT INTO location (user_id, name, coordinates) VALUES(${userId}, ${name}, ST_MakePoint(${lon}, ${lat}))`;
   }
 
-  getLocations(userId: number) {
-    return this.prisma.location.findMany({
-      where: {
-        userId,
-      },
-    });
+  getLocations(userId: number): PrismaPromise<Location> {
+    return this.prisma
+      .$queryRaw`SELECT id, name, ST_AsText(coordinates) FROM location WHERE user_id = ${userId}`;
   }
 }

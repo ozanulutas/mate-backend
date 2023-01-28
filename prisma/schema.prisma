@@ -1,13 +1,20 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// Postgis referance
+// https://www.prisma.io/docs/concepts/components/prisma-schema/postgresql-extensions
+// https://freddydumont.com/blog/prisma-postgis
+// https://github.com/prisma/prisma/issues/2789
+
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
 }
 
 // @TODO: optional alanları düzenle
@@ -73,17 +80,18 @@ model User {
 }
 
 model Location {
-  id        Int      @id @default(autoincrement())
-  name      String   @map("name")
-  latLon    String   @map("lat_lon")
-  city      String? // @TODO: ayrı tablodan al
-  country   String? // @TODO: ayrı tablodan al
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  userId    Int      @map("user_id")
+  id          Int                                  @id @default(autoincrement())
+  name        String
+  coordinates Unsupported("geometry(Point, 4326)")
+  city        String? // @TODO: ayrı tablodan al
+  country     String? // @TODO: ayrı tablodan al
+  userId      Int?                                 @map("user_id")
+  createdAt   DateTime                             @default(now()) @map("created_at")
+  updatedAt   DateTime?                            @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([coordinates], name: "location_idx", type: Gist)
   @@map("location")
 }
 
@@ -94,8 +102,8 @@ model Follow {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  follower  User @relation("follower", fields: [followerId], references: [id])
-  following User @relation("following", fields: [followingId], references: [id])
+  follower  User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@map("follow")
 }
@@ -107,7 +115,7 @@ model UserCategory {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  user     User     @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   category Category @relation(fields: [categoryId], references: [id])
 
   @@map("user_category")

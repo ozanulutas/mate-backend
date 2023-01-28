@@ -6,8 +6,7 @@ export class CreateLocationDto {
   name: string;
 
   @IsNotEmpty()
-  @IsString()
-  latLon: string;
+  coordinates: any; // @TODO: type
 
   // @IsString()
   // city: string;

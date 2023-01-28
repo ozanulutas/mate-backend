@@ -1,3 +1,6 @@
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "postgis";
+
 -- CreateTable
 CREATE TABLE "gender" (
     "id" SERIAL NOT NULL,
@@ -49,12 +52,12 @@ CREATE TABLE "user" (
 CREATE TABLE "location" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "lat_lon" TEXT NOT NULL,
+    "coordinates" geometry(Point, 4326) NOT NULL,
     "city" TEXT,
     "country" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
     "user_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "location_pkey" PRIMARY KEY ("id")
 );
@@ -86,6 +89,9 @@ CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_gsm_key" ON "user"("gsm");
+
+-- CreateIndex
+CREATE INDEX "location_idx" ON "location" USING GIST ("coordinates");
 
 -- AddForeignKey
 ALTER TABLE "category_relation" ADD CONSTRAINT "category_relation_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
