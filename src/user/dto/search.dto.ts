@@ -15,5 +15,5 @@ export class SearchDto {
 
   @IsNotEmpty()
   @IsNumber()
-  distance: number[];
+  distance: number;
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Location, PrismaPromise } from '@prisma/client';
+import { PrismaPromise } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateLocationDto } from './dto';
 
@@ -15,8 +15,8 @@ export class LocationRepository {
       .$queryRaw`INSERT INTO location (user_id, name, coordinates) VALUES(${userId}, ${name}, ST_MakePoint(${lon}, ${lat}))`;
   }
 
-  getLocations(userId: number): PrismaPromise<Location> {
+  getLocations(userId: number) {
     return this.prisma
-      .$queryRaw`SELECT id, name, ST_AsText(coordinates) FROM location WHERE user_id = ${userId}`;
+      .$queryRaw`SELECT id, name, CAST(ST_AsGeoJSON(coordinates) AS json) geojson FROM location WHERE user_id = ${userId}`;
   }
 }

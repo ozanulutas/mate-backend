@@ -27,7 +27,7 @@ export class UserController {
   search(
     @Query('lon', ParseFloatPipe) lon: number,
     @Query('lat', ParseFloatPipe) lat: number,
-    @Query('distance', ParseFloatPipe) distance,
+    @Query('distance', ParseFloatPipe) distance: number,
     @Query('categories', new ParseArrayPipe({ items: Number }))
     categories: number[],
   ) {

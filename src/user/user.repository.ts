@@ -67,12 +67,18 @@ export class UserRepository {
   search({ lon, lat, categories, distance }: SearchDto) {
     return this.prisma.$queryRaw`
       SELECT 
-        u.id userId, u.username, CAST(ST_ASGEOJSON(l.coordinates) AS json) geojson, ARRAY_AGG(c.name) categories
+        u.id id,
+        u.username,
+        CAST(ST_AsGeoJSON(l.coordinates) AS json) geojson,
+        ARRAY(
+          SELECT JSON_BUILD_OBJECT('id', c.id, 'name', c.name) 
+          FROM user_category uc, category c 
+          WHERE u.id = uc.user_id AND uc.category_id = c.id
+        ) categories
       FROM
-        location l JOIN "user" u ON l.user_id = u.id
+        "user" u JOIN location l ON l.user_id = u.id
         JOIN selected_location sl ON sl.location_id = l.id
         JOIN user_category uc ON u.id = uc.user_id
-        JOIN category c ON c.id = uc.category_id
       WHERE
         ST_DWithin((l.coordinates)::geography, ST_MakePoint(${lon}, ${lat}), ${distance}) 
         AND uc.category_id IN (${Prisma.join(categories)})
