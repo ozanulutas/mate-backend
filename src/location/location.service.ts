@@ -17,7 +17,7 @@ export class LocationService {
     };
   }
 
-  getLocations(userId: number) {
-    return this.locationRepository.getLocations(userId);
+  getLocationsByUserId(userId: number) {
+    return this.locationRepository.getLocationsByUserId(userId);
   }
 }

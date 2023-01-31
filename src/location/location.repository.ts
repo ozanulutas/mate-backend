@@ -15,7 +15,7 @@ export class LocationRepository {
       .$queryRaw`INSERT INTO location (user_id, name, coordinates) VALUES(${userId}, ${name}, ST_MakePoint(${lon}, ${lat}))`;
   }
 
-  getLocations(userId: number) {
+  getLocationsByUserId(userId: number) {
     return this.prisma
       .$queryRaw`SELECT id, name, CAST(ST_AsGeoJSON(coordinates) AS json) geojson FROM location WHERE user_id = ${userId}`;
   }

@@ -72,12 +72,41 @@ model User {
 
   gender           Gender?           @relation(fields: [genderId], references: [id])
   location         Location[]
-  followedBy       Follow[]          @relation("following") // @TODO: rename -> follower
-  following        Follow[]          @relation("follower") // @TODO: rename -> followings
-  userCategory     UserCategory[] // @TODO: rename -> userCategories
-  SelectedLocation SelectedLocation?
+  followers        Follow[]          @relation("following")
+  followings       Follow[]          @relation("follower")
+  categories       UserCategory[]
+  selectedLocation SelectedLocation?
+  posts            Post[]
+  comments         Comment[]
 
   @@map("user")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  text      String
+  userId    Int      @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id])
+  comments Comment[]
+
+  @@map("post")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  userId    Int      @map("user_id")
+  postId    Int      @map("post_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@map("comment")
 }
 
 model Location {
@@ -92,12 +121,13 @@ model Location {
   updatedAt   DateTime?                            @updatedAt @map("updated_at")
 
   user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  SelectedLocation SelectedLocation?
+  selectedLocation SelectedLocation?
 
   @@index([coordinates], name: "location_idx", type: Gist)
   @@map("location")
 }
 
+// @TODO: SelectedLocation gerekli mi?
 model SelectedLocation {
   id         Int @id @default(autoincrement())
   userId     Int @unique @map("user_id")

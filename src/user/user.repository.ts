@@ -30,7 +30,9 @@ export class UserRepository {
         id: true,
         email: true,
         username: true,
-        userCategory: {
+        birthday: true,
+        info: true,
+        categories: {
           select: {
             category: {
               select: {
@@ -40,7 +42,7 @@ export class UserRepository {
             },
           },
         },
-        following: {
+        followings: {
           select: {
             following: {
               select: {
@@ -50,7 +52,7 @@ export class UserRepository {
             },
           },
         },
-        followedBy: {
+        followers: {
           select: {
             follower: {
               select: {

@@ -22,9 +22,9 @@ export class UserService {
 
     const normalizedUser = {
       ...user,
-      userCategory: user.userCategory.map(({ category }) => category),
-      following: user.following.map(({ following }) => following),
-      followedBy: user.followedBy.map(({ follower }) => follower),
+      categories: user.categories.map(({ category }) => category),
+      followings: user.followings.map(({ following }) => following),
+      followers: user.followers.map(({ follower }) => follower),
     };
 
     return normalizedUser;

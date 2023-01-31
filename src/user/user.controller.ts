@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   ParseArrayPipe,
   Post,
   Query,
@@ -10,9 +9,10 @@ import {
 } from '@nestjs/common';
 import { UserId } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
-import { ParseIntPipe, ParseFloatPipe } from 'src/config/pipes';
+import { ParseFloatPipe } from 'src/config/pipes';
 import { CreateLocationDto } from 'src/location/dto';
 import { LocationService } from 'src/location/location.service';
+import { PostService } from 'src/post/post.service';
 import { UserService } from './user.service';
 
 @UseGuards(JwtGuard)
@@ -21,6 +21,7 @@ export class UserController {
   constructor(
     private userService: UserService,
     private locationService: LocationService,
+    private postService: PostService,
   ) {}
 
   @Get('search')
@@ -39,8 +40,8 @@ export class UserController {
     return this.userService.getUsers();
   }
 
-  @Get(':id')
-  getUserById(@Param('id', ParseIntPipe) id: number) {
+  @Get(':userId')
+  getUserById(@UserId() id: number) {
     return this.userService.getUserById(id);
   }
 
@@ -54,6 +55,11 @@ export class UserController {
 
   @Get(':userId/locations')
   getLocations(@UserId() userId: number) {
-    return this.locationService.getLocations(userId);
+    return this.locationService.getLocationsByUserId(userId);
+  }
+
+  @Get(':userId/feed')
+  getFeed(@UserId() userId: number) {
+    return this.postService.getFeed(userId);
   }
 }
