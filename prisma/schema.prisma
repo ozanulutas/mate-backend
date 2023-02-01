@@ -45,8 +45,8 @@ model Category {
 // https://www.prisma.io/docs/concepts/components/prisma-schema/relations/self-relations#many-to-many-self-relations
 model CategoryRelation {
   id              Int      @id @default(autoincrement())
-  categoryId      Int?     @map("category_id") // kendisi
-  childCategoryId Int?     @map("child_category_id")
+  categoryId      Int      @map("category_id") // kendisi
+  childCategoryId Int      @map("child_category_id")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
@@ -103,8 +103,8 @@ model Comment {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
-  post Post @relation(fields: [postId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
+  post Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("comment")
 }
@@ -160,7 +160,7 @@ model UserCategory {
   updatedAt  DateTime @updatedAt @map("updated_at")
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("user_category")
 }
