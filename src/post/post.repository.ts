@@ -5,17 +5,48 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class PostRepository {
   constructor(private prisma: PrismaService) {}
 
-  getPostsByUserId() {
-    return 'hi';
+  getPostsByUserId(userId: number) {
+    return this.prisma.post.findMany({
+      where: {
+        userId,
+      },
+      select: {
+        id: true,
+        text: true,
+        createdAt: true,
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
+    });
   }
 
   getFeed(userId: number) {
-    return this.prisma.follow.findMany({
-      where: { followerId: userId },
+    return this.prisma.post.findMany({
+      where: {
+        user: {
+          followers: {
+            some: {
+              followerId: userId,
+            },
+          },
+        },
+      },
       select: {
-        following: {
+        id: true,
+        text: true,
+        createdAt: true,
+        _count: {
           select: {
-            posts: true,
+            comments: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            username: true,
           },
         },
       },

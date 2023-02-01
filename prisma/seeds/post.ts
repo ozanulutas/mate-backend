@@ -19,6 +19,11 @@ export async function post(prisma: PrismaClient) {
         text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci, reiciendis?',
         userId: 3,
       },
+      {
+        id: 4,
+        text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci, reiciendis?',
+        userId: 3,
+      },
     ],
   });
 }

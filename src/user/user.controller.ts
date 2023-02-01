@@ -62,4 +62,9 @@ export class UserController {
   getFeed(@UserId() userId: number) {
     return this.postService.getFeed(userId);
   }
+
+  @Get(':userId/posts')
+  getPosts(@UserId() userId: number) {
+    return this.postService.getPostsByUserId(userId);
+  }
 }
