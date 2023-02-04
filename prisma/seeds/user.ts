@@ -29,6 +29,22 @@ export async function user(prisma: PrismaClient) {
         birthday: new Date('1964-05-06 00:00:00.000').toISOString(),
         info: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia, rem veniam nesciunt cum expedita veritatis pariatur error commodi temporibus praesentium quo vero doloremque accusantium delectus enim, voluptatem porro quibusdam? Ut.',
       },
+      {
+        id: 4,
+        username: 'hellullah',
+        email: 'hellullah@mail.com',
+        password: await bcrypt.hash('123', 10),
+        birthday: new Date('1666-06-06 00:00:00.000').toISOString(),
+        info: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia, rem veniam nesciunt cum expedita veritatis pariatur error commodi temporibus praesentium quo vero doloremque accusantium delectus enim, voluptatem porro quibusdam? Ut.',
+      },
+      {
+        id: 5,
+        username: 'gübeydi',
+        email: 'gubeydi@mail.com',
+        password: await bcrypt.hash('123', 10),
+        birthday: new Date('2000-06-06 00:00:00.000').toISOString(),
+        info: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Officia, rem veniam nesciunt cum expedita veritatis pariatur error commodi temporibus praesentium quo vero doloremque accusantium delectus enim, voluptatem porro quibusdam? Ut.',
+      },
     ],
   });
 }

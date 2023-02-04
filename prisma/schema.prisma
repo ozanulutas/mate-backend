@@ -18,6 +18,7 @@ datasource db {
 }
 
 // @TODO: optional alanları düzenle
+// @TODO: check onDelete and onUpdate restrictions when changing db client
 
 model Gender {
   id   Int    @id @default(autoincrement())
@@ -50,8 +51,8 @@ model CategoryRelation {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  category      Category? @relation("category", fields: [categoryId], references: [id])
-  childCategory Category? @relation("childCategory", fields: [childCategoryId], references: [id])
+  category      Category? @relation("category", fields: [categoryId], references: [id], onDelete: Cascade)
+  childCategory Category? @relation("childCategory", fields: [childCategoryId], references: [id], onDelete: Cascade)
 
   @@map("category_relation")
 }
@@ -78,6 +79,8 @@ model User {
   selectedLocation SelectedLocation?
   posts            Post[]
   comments         Comment[]
+  sentMessages     Message[]
+  receivedMessages MessageReceiver[]
 
   @@map("user")
 }
@@ -89,7 +92,7 @@ model Post {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user     User?     @relation(fields: [userId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments Comment[]
 
   @@map("post")
@@ -103,7 +106,7 @@ model Comment {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user User? @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   post Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@map("comment")
@@ -127,7 +130,7 @@ model Location {
   @@map("location")
 }
 
-// @TODO: SelectedLocation gerekli mi?
+// @TODO: SelectedLocation için ayrı tablo gerekli mi?
 model SelectedLocation {
   id         Int @id @default(autoincrement())
   userId     Int @unique @map("user_id")
@@ -163,4 +166,31 @@ model UserCategory {
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("user_category")
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  senderId  Int      @map("sender_id")
+  text      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sender    User              @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  receivers MessageReceiver[]
+
+  @@map("message")
+}
+
+model MessageReceiver {
+  id         Int      @id @default(autoincrement())
+  isRead     Boolean  @default(false) @map("is_read")
+  receiverId Int      @map("receiver_id")
+  messageId  Int      @map("message_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  receiver User    @relation(fields: [receiverId], references: [id], onDelete: Cascade)
+  message  Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@map("message_receiver")
 }

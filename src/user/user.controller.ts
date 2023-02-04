@@ -12,7 +12,9 @@ import { JwtGuard } from 'src/auth/guard';
 import { ParseFloatPipe } from 'src/config/pipes';
 import { CreateLocationDto } from 'src/location/dto';
 import { LocationService } from 'src/location/location.service';
+import { MessageService } from 'src/message/message.service';
 import { PostService } from 'src/post/post.service';
+import { GetChatDto } from './dto';
 import { UserService } from './user.service';
 
 @UseGuards(JwtGuard)
@@ -22,6 +24,7 @@ export class UserController {
     private userService: UserService,
     private locationService: LocationService,
     private postService: PostService,
+    private messageService: MessageService,
   ) {}
 
   @Get('search')
@@ -66,5 +69,13 @@ export class UserController {
   @Get(':userId/posts')
   getPosts(@UserId() userId: number) {
     return this.postService.getPostsByUserId(userId);
+  }
+
+  @Get(':userId/chats')
+  getChat(@UserId() userId: number, @Query() query: GetChatDto) {
+    const { peerId } = query;
+    return peerId
+      ? this.messageService.getUserChat(userId, +peerId)
+      : this.messageService.getUserChats(userId);
   }
 }

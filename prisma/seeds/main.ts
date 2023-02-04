@@ -5,6 +5,8 @@ import { comment } from './comment';
 import { follow } from './follow';
 import { gender } from './gender';
 import { location } from './location';
+import { message } from './message';
+import { messageReceiver } from './message-receiver';
 import { post } from './post';
 import { selectedLocation } from './selected-location';
 import { user } from './user';
@@ -24,6 +26,8 @@ async function main() {
     await categoryRelation(prisma);
     await userCategory(prisma);
     await follow(prisma);
+    await message(prisma);
+    await messageReceiver(prisma);
   } catch (e) {
     console.error(e);
     process.exit(1);

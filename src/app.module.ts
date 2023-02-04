@@ -9,6 +9,7 @@ import { CategoryModule } from './category/category.module';
 import { LocationModule } from './location/location.module';
 import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CommentModule } from './comment/comment.module';
     LocationModule,
     PostModule,
     CommentModule,
+    MessageModule,
   ],
 })
 export class AppModule {}
