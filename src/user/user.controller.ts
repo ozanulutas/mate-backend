@@ -14,7 +14,7 @@ import { CreateLocationDto } from 'src/location/dto';
 import { LocationService } from 'src/location/location.service';
 import { MessageService } from 'src/message/message.service';
 import { PostService } from 'src/post/post.service';
-import { GetChatDto } from './dto';
+import { CreateMessageDto, GetChatDto } from './dto';
 import { UserService } from './user.service';
 
 @UseGuards(JwtGuard)
@@ -75,7 +75,18 @@ export class UserController {
   getChat(@UserId() userId: number, @Query() query: GetChatDto) {
     const { peerId } = query;
     return peerId
-      ? this.messageService.getUserChat(userId, +peerId)
+      ? this.messageService.getUserChat(userId, +peerId) // @TODO: separate as get messages?
       : this.messageService.getUserChats(userId);
+  }
+
+  @Post(':userId/messages')
+  createMessage(
+    @UserId() userId: number,
+    @Body() createMessageDto: CreateMessageDto,
+  ) {
+    return this.messageService.createMessage({
+      ...createMessageDto,
+      senderId: userId,
+    });
   }
 }

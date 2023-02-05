@@ -6,6 +6,8 @@
 // https://freddydumont.com/blog/prisma-postgis
 // https://github.com/prisma/prisma/issues/2789
 
+// SELECT c.relname FROM pg_class c WHERE c.relkind = 'S';
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]

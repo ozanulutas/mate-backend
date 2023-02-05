@@ -22,4 +22,6 @@ export async function messageReceiver(prisma: PrismaClient) {
       { id: 14, messageId: 14, receiverId: 1, isRead: false },
     ],
   });
+  await prisma.$queryRaw`SELECT setval(pg_get_serial_sequence('message_receiver', 'id'), coalesce(max(id)+1, 1), false) FROM message_receiver;`;
+  // await prisma.$queryRaw`SELECT setval('message_receiver_id_seq', (SELECT max(id) FROM message_receiver))`;
 }

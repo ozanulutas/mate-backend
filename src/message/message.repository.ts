@@ -1,9 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateMessageDto } from './dto';
 
 @Injectable()
 export class MessageRepository {
   constructor(private prisma: PrismaService) {}
+
+  createMessage({ receiverId, senderId, text }: CreateMessageDto) {
+    return this.prisma.message.create({
+      data: {
+        senderId,
+        text,
+        receivers: {
+          create: [
+            {
+              receiverId,
+            },
+          ],
+        },
+      },
+
+      select: {
+        id: true,
+        text: true,
+        createdAt: true,
+        sender: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+  }
 
   // @TODO: optimize?
   getUserChats(userId: number) {
@@ -24,7 +53,7 @@ export class MessageRepository {
       SELECT
         m.id,
         m."text",
-        JSON_BUILD_OBJECT('id', mr.receiver_id, 'username', u2.username) receiver,
+        --JSON_BUILD_OBJECT('id', mr.receiver_id, 'username', u2.username) receiver,
 	      JSON_BUILD_OBJECT('id', m.sender_id, 'username', u.username) sender,
         m.created_at "createdAt"
       FROM
@@ -32,10 +61,8 @@ export class MessageRepository {
         JOIN "user" u ON m.sender_id = u.id
         JOIN "user" u2 ON mr.receiver_id = u2.id
       WHERE
-        (m.sender_id = ${userId}
-        AND mr.receiver_id = ${peerId})
-        OR (m.sender_id = ${peerId}
-        AND mr.receiver_id = ${userId})
+        (m.sender_id = ${userId} AND mr.receiver_id = ${peerId})
+        OR (m.sender_id = ${peerId} AND mr.receiver_id = ${userId})
       ORDER BY m.created_at;
     `;
   }
