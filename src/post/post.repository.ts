@@ -14,6 +14,12 @@ export class PostRepository {
         id: true,
         text: true,
         createdAt: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
         _count: {
           select: {
             comments: true,

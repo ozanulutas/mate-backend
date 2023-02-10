@@ -60,6 +60,7 @@ model CategoryRelation {
 }
 
 // @TODO: optional alanları düzenle
+// @TODO: bug - aynı başlayan maillerde unique hatası
 model User {
   id          Int       @id @default(autoincrement())
   username    String
@@ -83,6 +84,8 @@ model User {
   comments         Comment[]
   sentMessages     Message[]
   receivedMessages MessageReceiver[]
+  friends          Friend[]          @relation("receiver")
+  symmetricFriends Friend[]          @relation("sender")
 
   @@map("user")
 }
@@ -154,7 +157,32 @@ model Follow {
   follower  User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
   following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
+  @@unique([followerId, followingId])
   @@map("follow")
+}
+
+model Friend {
+  id                 Int      @id @default(autoincrement())
+  senderId           Int      @map("sender_id")
+  receiverId         Int      @map("receiver_id")
+  friendshipStatusId Int?     @map("friend_status_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  sender           User              @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver         User              @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  friendshipStatus FriendshipStatus? @relation(fields: [friendshipStatusId], references: [id], onDelete: SetNull)
+
+  @@unique([senderId, receiverId])
+  @@map("friend")
+}
+
+model FriendshipStatus {
+  id     Int      @id @default(autoincrement())
+  status String
+  Friend Friend[]
+
+  @@map("friendship_status")
 }
 
 model UserCategory {

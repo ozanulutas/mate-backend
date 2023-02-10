@@ -10,6 +10,7 @@ import { LocationModule } from './location/location.module';
 import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
 import { MessageModule } from './message/message.module';
+import { InitModule } from './init/init.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MessageModule } from './message/message.module';
     PostModule,
     CommentModule,
     MessageModule,
+    InitModule,
   ],
 })
 export class AppModule {}

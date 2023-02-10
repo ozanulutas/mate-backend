@@ -35,10 +35,6 @@ export class AuthService {
     return {
       data: {
         ...(await this.signToken(user.id, user.email)),
-        user: {
-          username: user.username,
-          id: user.id,
-        },
       },
       ...createToast({ text: `Welcome ${user.username}` }),
     };
@@ -50,10 +46,6 @@ export class AuthService {
     return {
       data: {
         ...(await this.signToken(user.id, user.email)),
-        user: {
-          username: user.username,
-          id: user.id,
-        },
       },
       ...createToast({ text: `Welcome ${user.username}` }),
     };

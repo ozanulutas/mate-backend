@@ -3,6 +3,8 @@ import { category } from './category';
 import { categoryRelation } from './category-relation';
 import { comment } from './comment';
 import { follow } from './follow';
+import { friend } from './friend';
+import { friendshipStatus } from './friendship-status';
 import { gender } from './gender';
 import { location } from './location';
 import { message } from './message';
@@ -17,6 +19,7 @@ const prisma = new PrismaClient();
 async function main() {
   try {
     await gender(prisma);
+    await friendshipStatus(prisma);
     await user(prisma);
     await location(prisma);
     await category(prisma);
@@ -26,6 +29,7 @@ async function main() {
     await categoryRelation(prisma);
     await userCategory(prisma);
     await follow(prisma);
+    await friend(prisma);
     await message(prisma);
     await messageReceiver(prisma);
   } catch (e) {
