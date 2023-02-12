@@ -19,7 +19,6 @@ export class MessageRepository {
           ],
         },
       },
-
       select: {
         id: true,
         text: true,
@@ -28,6 +27,16 @@ export class MessageRepository {
           select: {
             id: true,
             username: true,
+          },
+        },
+        receivers: {
+          select: {
+            receiver: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
           },
         },
       },
@@ -53,7 +62,7 @@ export class MessageRepository {
       SELECT
         m.id,
         m."text",
-        --JSON_BUILD_OBJECT('id', mr.receiver_id, 'username', u2.username) receiver,
+        JSON_BUILD_OBJECT('id', mr.receiver_id, 'username', u2.username) receiver,
 	      JSON_BUILD_OBJECT('id', m.sender_id, 'username', u.username) sender,
         m.created_at "createdAt"
       FROM

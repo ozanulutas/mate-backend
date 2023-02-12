@@ -111,7 +111,7 @@ CREATE TABLE "friend" (
     "id" SERIAL NOT NULL,
     "sender_id" INTEGER NOT NULL,
     "receiver_id" INTEGER NOT NULL,
-    "friend_status_id" INTEGER NOT NULL,
+    "friendship_status_id" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -121,7 +121,7 @@ CREATE TABLE "friend" (
 -- CreateTable
 CREATE TABLE "friendship_status" (
     "id" SERIAL NOT NULL,
-    "status" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
 
     CONSTRAINT "friendship_status_pkey" PRIMARY KEY ("id")
 );
@@ -221,7 +221,7 @@ ALTER TABLE "friend" ADD CONSTRAINT "friend_sender_id_fkey" FOREIGN KEY ("sender
 ALTER TABLE "friend" ADD CONSTRAINT "friend_receiver_id_fkey" FOREIGN KEY ("receiver_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "friend" ADD CONSTRAINT "friend_friend_status_id_fkey" FOREIGN KEY ("friend_status_id") REFERENCES "friendship_status"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "friend" ADD CONSTRAINT "friend_friendship_status_id_fkey" FOREIGN KEY ("friendship_status_id") REFERENCES "friendship_status"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "user_category" ADD CONSTRAINT "user_category_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;

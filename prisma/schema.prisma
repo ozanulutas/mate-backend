@@ -165,7 +165,7 @@ model Friend {
   id                 Int      @id @default(autoincrement())
   senderId           Int      @map("sender_id")
   receiverId         Int      @map("receiver_id")
-  friendshipStatusId Int?     @map("friend_status_id")
+  friendshipStatusId Int?     @map("friendship_status_id")
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
 
@@ -179,7 +179,7 @@ model Friend {
 
 model FriendshipStatus {
   id     Int      @id @default(autoincrement())
-  status String
+  name   String
   Friend Friend[]
 
   @@map("friendship_status")

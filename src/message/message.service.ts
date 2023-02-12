@@ -6,8 +6,16 @@ import { MessageRepository } from './message.repository';
 export class MessageService {
   constructor(private messageRepository: MessageRepository) {}
 
-  createMessage(createMessageDto: CreateMessageDto) {
-    return this.messageRepository.createMessage(createMessageDto);
+  async createMessage(createMessageDto: CreateMessageDto) {
+    const message = await this.messageRepository.createMessage(
+      createMessageDto,
+    );
+    const {
+      receivers: [receiver],
+      ...rest
+    } = message;
+
+    return { ...rest, ...receiver };
   }
 
   getUserChats(userId: number) {
