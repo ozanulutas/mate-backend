@@ -2,3 +2,8 @@ export * from './create-user.dto';
 export * from './search.dto';
 export * from './get-chat.dto';
 export * from './create-message.dto';
+export * from './follow.dto';
+export * from './unfollow.dto';
+export * from './request-friendship.dto';
+export * from './update-friendship.dto';
+export * from './delete-friendship.dto';

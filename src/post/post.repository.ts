@@ -53,6 +53,18 @@ export class PostRepository {
           select: {
             id: true,
             username: true,
+            // followers: {
+            //   select: {
+            //     follower: {
+            //       select: {
+            //         id: true,
+            //       },
+            //     },
+            //   },
+            //   where: {
+            //     followerId: userId, // @TODO: convert to boolean
+            //   },
+            // },
           },
         },
       },

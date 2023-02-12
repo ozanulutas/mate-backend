@@ -9,4 +9,5 @@ export async function follow(prisma: PrismaClient) {
       { id: 3, followerId: 3, followingId: 2 },
     ],
   });
+  await prisma.$queryRaw`SELECT setval(pg_get_serial_sequence('follow', 'id'), coalesce(max(id)+1, 1), false) FROM follow;`;
 }

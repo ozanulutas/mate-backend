@@ -1,7 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto, SearchDto } from './dto';
+import {
+  CreateUserDto,
+  DeleteFriendshipDto,
+  FollowDto,
+  RequestFriendshipDto,
+  SearchDto,
+  UnfollowDto,
+  UpdateFriendshipDto,
+} from './dto';
+import { FriendshipStatus } from './user.constants';
 
 @Injectable()
 export class UserRepository {
@@ -23,8 +32,8 @@ export class UserRepository {
     });
   }
 
-  getUserById(id: number) {
-    return this.prisma.user.findUnique({
+  getUserById(id: number, requesterId: number) {
+    return this.prisma.user.findUniqueOrThrow({
       where: { id },
       select: {
         id: true,
@@ -32,6 +41,12 @@ export class UserRepository {
         username: true,
         birthday: true,
         info: true,
+        _count: {
+          select: {
+            followers: true,
+            followings: true,
+          },
+        },
         categories: {
           select: {
             category: {
@@ -42,22 +57,82 @@ export class UserRepository {
             },
           },
         },
-        followings: {
+        followers: {
+          where: {
+            followerId: requesterId,
+          },
           select: {
-            following: {
-              select: {
-                id: true,
-                username: true,
-              },
-            },
+            followerId: true,
           },
         },
-        followers: {
+        friends: {
+          where: {
+            senderId: requesterId,
+          },
           select: {
-            follower: {
-              select: {
-                id: true,
-                username: true,
+            friendshipStatusId: true,
+          },
+        },
+        symmetricFriends: {
+          where: {
+            receiverId: requesterId,
+          },
+          select: {
+            friendshipStatusId: true,
+          },
+        },
+      },
+    });
+  }
+
+  getUserFollowers(userId: number) {
+    return this.prisma.follow.findMany({
+      where: {
+        followingId: userId,
+      },
+      select: {
+        follower: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+  }
+
+  getUserFollowings(userId: number) {
+    return this.prisma.follow.findMany({
+      where: {
+        followerId: userId,
+      },
+      select: {
+        following: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+  }
+
+  getUserConfig(userId: number) {
+    return this.prisma.user.findFirst({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        _count: {
+          select: {
+            receivedNotifications: {
+              where: {
+                isViewed: false,
+              },
+            },
+            receivedMessages: {
+              where: {
+                isRead: false,
               },
             },
           },
@@ -101,4 +176,77 @@ export class UserRepository {
       },
     });
   }
+
+  follow(followDto: FollowDto) {
+    return this.prisma.follow.create({
+      data: followDto,
+      select: {
+        id: true,
+      },
+    });
+  }
+
+  unfollow({ followerId, followingId }: UnfollowDto) {
+    return this.prisma.follow.delete({
+      where: { followerId_followingId: { followerId, followingId } },
+      select: {
+        id: true,
+      },
+    });
+  }
+
+  requestFriendship({ senderId, receiverId }: RequestFriendshipDto) {
+    return this.prisma.friend.upsert({
+      where: { senderId_receiverId: { senderId, receiverId } },
+      create: {
+        senderId,
+        receiverId,
+        friendshipStatusId: FriendshipStatus.REQUESTED,
+      },
+      update: {
+        friendshipStatusId: FriendshipStatus.REQUESTED,
+      },
+      select: {
+        id: true,
+      },
+    });
+  }
+
+  updateFriendship({
+    senderId,
+    receiverId,
+    friendshipStatusId,
+  }: UpdateFriendshipDto) {
+    return this.prisma.friend.update({
+      where: { senderId_receiverId: { senderId, receiverId } },
+      data: {
+        friendshipStatusId,
+      },
+      select: {
+        id: true,
+      },
+    });
+  }
+
+  deleteFriendship({ senderId, receiverId }: DeleteFriendshipDto) {
+    return this.prisma.friend.deleteMany({
+      where: {
+        OR: [
+          { receiverId, senderId },
+          { receiverId: senderId, senderId: receiverId },
+        ],
+      },
+    });
+  }
+
+  // getNotifications(userId: number) {
+  //   return this.prisma.user.findMany({
+  //     where: {
+  //       id: userId
+  //     },
+  //     select: {
+
+  //     }
+  //   });
+  // }
 }

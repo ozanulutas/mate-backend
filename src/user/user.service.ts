@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { CreateUserDto, SearchDto } from './dto';
+import {
+  CreateUserDto,
+  DeleteFriendshipDto,
+  FollowDto,
+  RequestFriendshipDto,
+  SearchDto,
+  UnfollowDto,
+  UpdateFriendshipDto,
+} from './dto';
 import { UserRepository } from './user.repository';
 import { CredentialsTakenException } from 'src/config/exceptions';
 
@@ -17,17 +25,36 @@ export class UserService {
     return this.userRepository.getUserByEmail(email);
   }
 
-  async getUserById(id: number) {
-    const user = await this.userRepository.getUserById(id);
+  async getUserById(id: number, requesterId: number) {
+    const { followers, friends, symmetricFriends, ...user } =
+      await this.userRepository.getUserById(id, requesterId);
+
+    const [friendshipStatusWithMe] = [...friends, ...symmetricFriends].map(
+      ({ friendshipStatusId }) => friendshipStatusId,
+    );
 
     const normalizedUser = {
       ...user,
-      categories: user.categories.map(({ category }) => category),
-      followings: user.followings.map(({ following }) => following),
-      followers: user.followers.map(({ follower }) => follower),
+      categories: user?.categories.map(({ category }) => category),
+      friendshipStatusWithMe: friendshipStatusWithMe ?? null,
+      isFollowedByMe: followers.some(
+        ({ followerId }) => followerId === requesterId,
+      ),
     };
 
     return normalizedUser;
+  }
+
+  getUserFollowers(userId: number) {
+    return this.userRepository.getUserFollowers(userId);
+  }
+
+  getUserFollowings(userId: number) {
+    return this.userRepository.getUserFollowings(userId);
+  }
+
+  getUserConfig(userId: number) {
+    return this.userRepository.getUserConfig(userId);
   }
 
   search(searchDto: SearchDto) {
@@ -51,5 +78,25 @@ export class UserService {
 
       throw error;
     }
+  }
+
+  follow(followDto: FollowDto) {
+    return this.userRepository.follow(followDto);
+  }
+
+  unfollow(unfollowDto: UnfollowDto) {
+    return this.userRepository.unfollow(unfollowDto);
+  }
+
+  requestFriendship(requestFriendshipDto: RequestFriendshipDto) {
+    return this.userRepository.requestFriendship(requestFriendshipDto);
+  }
+
+  updateFriendship(updateFriendshipDto: UpdateFriendshipDto) {
+    return this.userRepository.updateFriendship(updateFriendshipDto);
+  }
+
+  deleteFriendship(deleteFriendshipDto: DeleteFriendshipDto) {
+    return this.userRepository.deleteFriendship(deleteFriendshipDto);
   }
 }
