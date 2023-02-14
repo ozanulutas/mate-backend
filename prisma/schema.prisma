@@ -10,7 +10,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
+  previewFeatures = ["postgresqlExtensions", "filteredRelationCount"]
 }
 
 datasource db {
@@ -74,18 +74,20 @@ model User {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  gender           Gender?           @relation(fields: [genderId], references: [id])
-  location         Location[]
-  followers        Follow[]          @relation("following")
-  followings       Follow[]          @relation("follower")
-  categories       UserCategory[]
-  selectedLocation SelectedLocation?
-  posts            Post[]
-  comments         Comment[]
-  sentMessages     Message[]
-  receivedMessages MessageReceiver[]
-  friends          Friend[]          @relation("receiver")
-  symmetricFriends Friend[]          @relation("sender")
+  gender                 Gender?           @relation(fields: [genderId], references: [id])
+  location               Location[]
+  followers              Follow[]          @relation("following")
+  followings             Follow[]          @relation("follower")
+  categories             UserCategory[]
+  selectedLocation       SelectedLocation?
+  posts                  Post[]
+  comments               Comment[]
+  sentMessages           Message[]
+  receivedMessages       MessageReceiver[]
+  friends                Friend[]          @relation("receiver")
+  symmetricFriends       Friend[]          @relation("sender")
+  triggeredNotifications Notification[]
+  receivedNotifications  Notifier[]
 
   @@map("user")
 }
@@ -223,4 +225,44 @@ model MessageReceiver {
   message  Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
 
   @@map("message_receiver")
+}
+
+model Notification {
+  id                 Int      @id @default(autoincrement())
+  actorId            Int      @map("actor_id") // user who is responsible for triggering a notification
+  entityId           Int      @map("entity_id") // what the notification is about. postId, commentId, followerId...
+  notificationTypeId Int      @map("notification_type_id") // different types of notifications
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  actor            User             @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  notificationType NotificationType @relation(fields: [notificationTypeId], references: [id], onDelete: Cascade)
+  notifiers        Notifier[]
+
+  @@map("notification")
+}
+
+model Notifier {
+  id             Int      @id @default(autoincrement())
+  notifierId     Int      @map("notifier_id") // user to whom the notification has to be sent. Notifier can be either a single user or multiple users
+  notificationId Int      @map("notification_id")
+  isViewed       Boolean  @map("is_viewed")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  notifier     User         @relation(fields: [notifierId], references: [id], onDelete: Cascade)
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@map("notifier")
+}
+
+model NotificationType {
+  id        Int      @id @default(autoincrement())
+  name      String // notif type
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  notifications Notification[]
+
+  @@map("notification_type")
 }
