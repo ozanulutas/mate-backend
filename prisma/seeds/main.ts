@@ -9,6 +9,9 @@ import { gender } from './gender';
 import { location } from './location';
 import { message } from './message';
 import { messageReceiver } from './message-receiver';
+import { notification } from './notification';
+import { notificationType } from './notification-type';
+import { notifier } from './notifier';
 import { post } from './post';
 import { selectedLocation } from './selected-location';
 import { user } from './user';
@@ -20,6 +23,7 @@ async function main() {
   try {
     await gender(prisma);
     await friendshipStatus(prisma);
+    await notificationType(prisma);
     await user(prisma);
     await location(prisma);
     await category(prisma);
@@ -32,6 +36,8 @@ async function main() {
     await friend(prisma);
     await message(prisma);
     await messageReceiver(prisma);
+    await notification(prisma);
+    await notifier(prisma);
   } catch (e) {
     console.error(e);
     process.exit(1);

@@ -7,7 +7,7 @@ export async function comment(prisma: PrismaClient) {
       {
         id: 1,
         text: 'Lorem ipsum dolor sit amet.',
-        userId: 1,
+        userId: 2,
         postId: 1,
       },
       {
