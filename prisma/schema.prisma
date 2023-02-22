@@ -246,7 +246,7 @@ model Notifier {
   id             Int      @id @default(autoincrement())
   notifierId     Int      @map("notifier_id") // user to whom the notification has to be sent. Notifier can be either a single user or multiple users
   notificationId Int      @map("notification_id")
-  isViewed       Boolean  @map("is_viewed")
+  isViewed       Boolean  @default(false) @map("is_viewed")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
