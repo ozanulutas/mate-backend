@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateNotificationDto, RemoveUserNotificationDto } from './dto';
+import { CreateNotificationDto, RemoveNotificationDto } from './dto';
 
 @Injectable()
 export class NotificationRepository {
@@ -46,9 +46,9 @@ export class NotificationRepository {
     });
   }
 
-  removeUserNotification(removeUserNotificationDto: RemoveUserNotificationDto) {
+  removeNotification(removeNotificationDto: RemoveNotificationDto) {
     return this.prisma.notification.deleteMany({
-      where: removeUserNotificationDto,
+      where: removeNotificationDto,
     });
   }
 }

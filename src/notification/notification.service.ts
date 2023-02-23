@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNotificationDto, RemoveUserNotificationDto } from './dto';
+import { CreateNotificationDto, RemoveNotificationDto } from './dto';
 import { NotificationRepository } from './notification.repository';
 
 @Injectable()
@@ -16,9 +16,9 @@ export class NotificationService {
     );
   }
 
-  removeUserNotification(removeUserNotificationDto: RemoveUserNotificationDto) {
-    return this.notificationRepository.removeUserNotification(
-      removeUserNotificationDto,
+  removeNotification(removeNotificationDto: RemoveNotificationDto) {
+    return this.notificationRepository.removeNotification(
+      removeNotificationDto,
     );
   }
 }

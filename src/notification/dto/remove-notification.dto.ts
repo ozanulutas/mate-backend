@@ -1,7 +1,7 @@
 import { IsOptional } from 'class-validator';
 import { NotificationType } from '../notification.constants';
 
-export class RemoveUserNotificationDto {
+export class RemoveNotificationDto {
   @IsOptional()
   actorId: number;
 

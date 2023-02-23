@@ -8,7 +8,7 @@ export async function notification(prisma: PrismaClient) {
       {
         id: 1,
         actorId: 3,
-        entityId: 3,
+        entityId: 1,
         notificationTypeId: NotificationType.FRIENDSHIP_REQUESTED,
         createdAt: new Date('2023-02-12 15:04:13.690'),
       },
@@ -22,14 +22,14 @@ export async function notification(prisma: PrismaClient) {
       {
         id: 3,
         actorId: 2,
-        entityId: 2,
+        entityId: 1,
         notificationTypeId: NotificationType.FRIENDSHIP_ACCEPTED,
         createdAt: new Date('2023-02-12 17:04:13.690'),
       },
       {
         id: 4,
         actorId: 3,
-        entityId: 3,
+        entityId: 2,
         notificationTypeId: NotificationType.FRIENDSHIP_ACCEPTED,
         createdAt: new Date('2023-02-12 15:04:13.690'),
       },
