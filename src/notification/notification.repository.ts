@@ -34,13 +34,23 @@ export class NotificationRepository {
   }
 
   createNotification({ notifierIds, ...rest }: CreateNotificationDto) {
-    console.log({ notifierIds, rest });
-
     return this.prisma.notification.create({
       data: {
         ...rest,
         notifiers: {
           create: notifierIds.map((notifierId) => ({ notifierId })),
+        },
+      },
+      select: {
+        id: true,
+        entityId: true,
+        notificationTypeId: true,
+        createdAt: true,
+        actor: {
+          select: {
+            id: true,
+            username: true,
+          },
         },
       },
     });
