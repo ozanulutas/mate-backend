@@ -1,19 +1,33 @@
 import { Injectable } from '@nestjs/common';
+import { SoketClientProvider } from 'src/socket/socket-client.provider';
+import { SocketEvent } from 'src/socket/socket.constants';
 import { CreateNotificationDto, RemoveNotificationDto } from './dto';
 import { NotificationRepository } from './notification.repository';
 
 @Injectable()
 export class NotificationService {
-  constructor(private notificationRepository: NotificationRepository) {}
+  constructor(
+    private notificationRepository: NotificationRepository,
+    private socketProivder: SoketClientProvider,
+  ) {}
 
   getUserNotifications(userId: number) {
     return this.notificationRepository.getUserNotifications(userId);
   }
 
-  createNotification(createNotificationDto: CreateNotificationDto) {
-    return this.notificationRepository.createNotification(
+  async createNotification(createNotificationDto: CreateNotificationDto) {
+    const { notifierIds } = createNotificationDto;
+
+    const result = await this.notificationRepository.createNotification(
       createNotificationDto,
     );
+
+    this.socketProivder.socket.emit(
+      SocketEvent.NEW_NOTIFICATION,
+      notifierIds[0],
+    );
+
+    return result;
   }
 
   removeNotification(removeNotificationDto: RemoveNotificationDto) {
