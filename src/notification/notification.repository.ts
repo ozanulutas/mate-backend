@@ -28,7 +28,7 @@ export class NotificationRepository {
         },
       },
       orderBy: {
-        createdAt: 'asc',
+        createdAt: 'desc',
       },
     });
   }
