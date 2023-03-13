@@ -3,3 +3,8 @@ export enum FriendshipStatus {
   ACCEPTED,
   BLOCKED,
 }
+
+export const Event = {
+  FRIENDSHIP_REQUESTED: 'friendship.requested',
+  FRIENDSHIP_RESPONDED: 'friendship.responded',
+};
