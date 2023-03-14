@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import {
@@ -12,10 +13,15 @@ import {
 } from './dto';
 import { UserRepository } from './user.repository';
 import { CredentialsTakenException } from 'src/config/exceptions';
+import { FriendshipRequestedEvent, FriendshipRespondedEvent } from './events';
+import { Event } from './user.constants';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   getUsers() {
     return this.userRepository.getUsers();
@@ -88,15 +94,42 @@ export class UserService {
     return this.userRepository.unfollow(unfollowDto);
   }
 
-  requestFriendship(requestFriendshipDto: RequestFriendshipDto) {
-    return this.userRepository.requestFriendship(requestFriendshipDto);
+  async requestFriendship(requestFriendshipDto: RequestFriendshipDto) {
+    const result = await this.userRepository.requestFriendship(
+      requestFriendshipDto,
+    );
+
+    this.eventEmitter.emit(
+      Event.FRIENDSHIP_REQUESTED,
+      new FriendshipRequestedEvent(requestFriendshipDto),
+    );
+
+    return result;
   }
 
-  updateFriendship(updateFriendshipDto: UpdateFriendshipDto) {
-    return this.userRepository.updateFriendship(updateFriendshipDto);
+  async updateFriendship(updateFriendshipDto: UpdateFriendshipDto) {
+    const result = await this.userRepository.updateFriendship(
+      updateFriendshipDto,
+    );
+
+    this.eventEmitter.emit(
+      Event.FRIENDSHIP_RESPONDED,
+      new FriendshipRespondedEvent(updateFriendshipDto),
+    );
+
+    return result;
   }
 
-  deleteFriendship(deleteFriendshipDto: DeleteFriendshipDto) {
-    return this.userRepository.deleteFriendship(deleteFriendshipDto);
+  async deleteFriendship(deleteFriendshipDto: DeleteFriendshipDto) {
+    const result = await this.userRepository.deleteFriendship(
+      deleteFriendshipDto,
+    );
+
+    this.eventEmitter.emit(
+      Event.FRIENDSHIP_RESPONDED,
+      new FriendshipRespondedEvent(deleteFriendshipDto),
+    );
+
+    return result;
   }
 }
