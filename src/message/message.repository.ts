@@ -75,4 +75,21 @@ export class MessageRepository {
       ORDER BY m.created_at;
     `;
   }
+
+  getUnreadMessageSenderAndCount(userId: number) {
+    return this.prisma.message.groupBy({
+      by: ['senderId'],
+      _count: {
+        senderId: true,
+      },
+      where: {
+        receivers: {
+          some: {
+            isRead: false,
+            receiverId: userId,
+          },
+        },
+      },
+    });
+  }
 }
