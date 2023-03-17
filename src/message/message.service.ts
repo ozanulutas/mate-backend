@@ -25,4 +25,8 @@ export class MessageService {
   getUserChat(userId: number, peerId: number) {
     return this.messageRepository.getUserChat(userId, peerId);
   }
+
+  getUnreadMessageSenderAndCount(userId: number) {
+    return this.messageRepository.getUnreadMessageSenderAndCount(userId);
+  }
 }
