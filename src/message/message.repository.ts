@@ -76,7 +76,7 @@ export class MessageRepository {
     `;
   }
 
-  getUnreadMessageSenderAndCount(userId: number) {
+  getUnreadChatInfo(userId: number) {
     return this.prisma.message.groupBy({
       by: ['senderId'],
       _count: {

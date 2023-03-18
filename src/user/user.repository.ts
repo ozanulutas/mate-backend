@@ -130,11 +130,6 @@ export class UserRepository {
                 isViewed: false,
               },
             },
-            receivedMessages: {
-              where: {
-                isRead: false,
-              },
-            },
           },
         },
       },
