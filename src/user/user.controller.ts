@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   ParseArrayPipe,
+  ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -161,5 +162,23 @@ export class UserController {
   @Get(':userId/notifications')
   getNotifications(@UserId() userId: number) {
     return this.notificationService.getUserNotifications(userId);
+  }
+
+  @Get(':userId/notifications/count')
+  getNotificationCount(
+    @UserId() userId: number,
+    @Query('isViewed') isViewed: string,
+  ) {
+    return this.notificationService.getNotificationCount({
+      notifierId: userId,
+      isViewed:
+        isViewed === 'true' ? true : isViewed === 'false' ? false : undefined,
+    });
+  }
+
+  // make it generic?
+  @Patch(':userId/notifications')
+  setNotificationsAsViewed(@UserId() userId: number) {
+    return this.notificationService.updateNotificationIsViewed(userId, true);
   }
 }

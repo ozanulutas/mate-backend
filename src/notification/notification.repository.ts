@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateNotificationDto, RemoveNotificationDto } from './dto';
+import {
+  CreateNotificationDto,
+  GetNotificationCountDto,
+  RemoveNotificationDto,
+} from './dto';
 
 @Injectable()
 export class NotificationRepository {
@@ -59,6 +63,28 @@ export class NotificationRepository {
   removeNotification(removeNotificationDto: RemoveNotificationDto) {
     return this.prisma.notification.deleteMany({
       where: removeNotificationDto,
+    });
+  }
+
+  getNotificationCount(getNotificationCountDto: GetNotificationCountDto) {
+    return this.prisma.notification.count({
+      where: {
+        notifiers: {
+          every: getNotificationCountDto,
+        },
+      },
+    });
+  }
+
+  updateNotificationIsViewed(notifierId: number, isViewed: boolean) {
+    return this.prisma.notifier.updateMany({
+      where: {
+        notifierId,
+        isViewed: false,
+      },
+      data: {
+        isViewed,
+      },
     });
   }
 }
