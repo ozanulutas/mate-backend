@@ -130,6 +130,12 @@ export class UserRepository {
                 isViewed: false,
               },
             },
+            friends: {
+              where: {
+                friendshipStatusId: FriendshipStatus.REQUESTED,
+                receiverId: userId,
+              },
+            },
           },
         },
       },
@@ -190,7 +196,25 @@ export class UserRepository {
     });
   }
 
-  // @TODO: convert to create?
+  getFriendshipRequests(receiverId: number) {
+    return this.prisma.friend.findMany({
+      where: {
+        receiverId,
+        friendshipStatusId: FriendshipStatus.REQUESTED,
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        sender: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+  }
+
   requestFriendship({ senderId, receiverId }: RequestFriendshipDto) {
     return this.prisma.friend.create({
       data: {
@@ -202,20 +226,6 @@ export class UserRepository {
         id: true,
       },
     });
-    // return this.prisma.friend.upsert({
-    //   where: { senderId_receiverId: { senderId, receiverId } },
-    //   create: {
-    //     senderId,
-    //     receiverId,
-    //     friendshipStatusId: FriendshipStatus.REQUESTED,
-    //   },
-    //   update: {
-    //     friendshipStatusId: FriendshipStatus.REQUESTED,
-    //   },
-    //   select: {
-    //     id: true,
-    //   },
-    // });
   }
 
   updateFriendship({

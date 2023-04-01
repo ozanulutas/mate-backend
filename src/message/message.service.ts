@@ -22,11 +22,21 @@ export class MessageService {
     return this.messageRepository.getUserChats(userId);
   }
 
-  getUserChat(userId: number, peerId: number) {
-    return this.messageRepository.getUserChat(userId, peerId);
+  getUserChatMessages(userId: number, peerId: number) {
+    return this.messageRepository.getUserChatMessages(userId, peerId);
   }
 
-  getUnreadChatInfo(userId: number) {
-    return this.messageRepository.getUnreadChatInfo(userId);
+  async getUnreadChatInfo(userId: number) {
+    const result = await this.messageRepository.getUnreadChatInfo(userId);
+
+    return result.map(({ _count: { senderId: _count }, senderId, text }) => ({
+      senderId,
+      text,
+      _count,
+    }));
+  }
+
+  updateMessagesAsRead(receiverId: number, peerId: number) {
+    return this.messageRepository.updateMessagesAsRead(receiverId, peerId);
   }
 }

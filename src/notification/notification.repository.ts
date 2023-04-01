@@ -5,6 +5,7 @@ import {
   GetNotificationCountDto,
   RemoveNotificationDto,
 } from './dto';
+import { NotificationType } from './notification.constants';
 
 @Injectable()
 export class NotificationRepository {
@@ -17,6 +18,9 @@ export class NotificationRepository {
           some: {
             notifierId: userId,
           },
+        },
+        notificationTypeId: {
+          not: NotificationType.FRIENDSHIP_REQUESTED,
         },
       },
       select: {
@@ -72,18 +76,26 @@ export class NotificationRepository {
         notifiers: {
           every: getNotificationCountDto,
         },
+        notificationTypeId: {
+          not: NotificationType.FRIENDSHIP_REQUESTED,
+        },
       },
     });
   }
 
-  updateNotificationIsViewed(notifierId: number, isViewed: boolean) {
+  updateNotificationsAsViewed(notifierId: number) {
     return this.prisma.notifier.updateMany({
       where: {
         notifierId,
         isViewed: false,
+        notification: {
+          notificationTypeId: {
+            not: NotificationType.FRIENDSHIP_REQUESTED,
+          },
+        },
       },
       data: {
-        isViewed,
+        isViewed: true,
       },
     });
   }

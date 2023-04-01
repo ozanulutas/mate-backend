@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateMessageDto } from './dto';
+import { Chat, ChatMessage } from './message';
 
 @Injectable()
 export class MessageRepository {
@@ -45,9 +46,12 @@ export class MessageRepository {
 
   // @TODO: optimize?
   getUserChats(userId: number) {
-    return this.prisma.$queryRaw`
+    return this.prisma.$queryRaw<Chat[]>`
       SELECT
-        DISTINCT ON(u.id) u.id "userId", u.username, m."text", mr.is_read "isRead"
+        DISTINCT ON(u.id) u.id "userId",
+        u.username,
+        --mr.is_read "isRead"
+        m."text"
       FROM
         message m JOIN message_receiver mr ON m.id = mr.message_id
         JOIN "user" u ON mr.receiver_id = u.id OR m.sender_id = u.id
@@ -57,11 +61,12 @@ export class MessageRepository {
     `;
   }
 
-  getUserChat(userId: number, peerId: number) {
-    return this.prisma.$queryRaw`
+  getUserChatMessages(userId: number, peerId: number) {
+    return this.prisma.$queryRaw<ChatMessage[]>`
       SELECT
         m.id,
         m."text",
+        mr.is_read "isRead",
         JSON_BUILD_OBJECT('id', mr.receiver_id, 'username', u2.username) receiver,
 	      JSON_BUILD_OBJECT('id', m.sender_id, 'username', u.username) sender,
         m.created_at "createdAt"
@@ -78,7 +83,7 @@ export class MessageRepository {
 
   getUnreadChatInfo(userId: number) {
     return this.prisma.message.groupBy({
-      by: ['senderId'],
+      by: ['senderId', 'text'],
       _count: {
         senderId: true,
       },
@@ -89,6 +94,21 @@ export class MessageRepository {
             receiverId: userId,
           },
         },
+      },
+    });
+  }
+
+  updateMessagesAsRead(receiverId: number, senderId: number) {
+    return this.prisma.messageReceiver.updateMany({
+      where: {
+        isRead: false,
+        receiverId,
+        message: {
+          senderId,
+        },
+      },
+      data: {
+        isRead: true,
       },
     });
   }

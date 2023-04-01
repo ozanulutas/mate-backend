@@ -7,6 +7,7 @@ import {
   RemoveNotificationDto,
 } from './dto';
 import { NotificationRepository } from './notification.repository';
+import { NotificationType } from './notification.constants';
 
 @Injectable()
 export class NotificationService {
@@ -20,16 +21,18 @@ export class NotificationService {
   }
 
   async createNotification(createNotificationDto: CreateNotificationDto) {
-    const { notifierIds } = createNotificationDto;
+    const { notifierIds, notificationTypeId } = createNotificationDto;
 
     const result = await this.notificationRepository.createNotification(
       createNotificationDto,
     );
 
-    this.socketProivder.socket.emit(
-      SocketEvent.NEW_NOTIFICATION,
-      notifierIds[0],
-    );
+    if (notificationTypeId !== NotificationType.FRIENDSHIP_REQUESTED) {
+      this.socketProivder.socket.emit(
+        SocketEvent.NEW_NOTIFICATION,
+        notifierIds[0],
+      );
+    }
 
     return result;
   }
@@ -46,10 +49,7 @@ export class NotificationService {
     );
   }
 
-  updateNotificationIsViewed(notifierId: number, isViewed: boolean) {
-    return this.notificationRepository.updateNotificationIsViewed(
-      notifierId,
-      isViewed,
-    );
+  updateNotificationsAsViewed(notifierId: number) {
+    return this.notificationRepository.updateNotificationsAsViewed(notifierId);
   }
 }

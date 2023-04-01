@@ -15,12 +15,14 @@ import { UserRepository } from './user.repository';
 import { CredentialsTakenException } from 'src/config/exceptions';
 import { FriendshipRequestedEvent, FriendshipRespondedEvent } from './events';
 import { Event } from './user.constants';
+import { MessageService } from 'src/message/message.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private userRepository: UserRepository,
     private eventEmitter: EventEmitter2,
+    private messageService: MessageService,
   ) {}
 
   getUsers() {
@@ -94,6 +96,10 @@ export class UserService {
     return this.userRepository.unfollow(unfollowDto);
   }
 
+  getFriendshipRequests(receiverId: number) {
+    return this.userRepository.getFriendshipRequests(receiverId);
+  }
+
   async requestFriendship(requestFriendshipDto: RequestFriendshipDto) {
     const result = await this.userRepository.requestFriendship(
       requestFriendshipDto,
@@ -131,5 +137,38 @@ export class UserService {
     );
 
     return result;
+  }
+
+  async getChats(userId: number) {
+    const [unreadChatInfo, userChats] = await Promise.all([
+      this.messageService.getUnreadChatInfo(userId),
+      this.messageService.getUserChats(userId),
+    ]);
+
+    const userChatsWithUnreadInfo = userChats.reduce<
+      (typeof userChats[0] & { unreadMessageCount: number })[]
+    >((acc, chat) => {
+      const unreadChat = unreadChatInfo.find(
+        (item) => item.senderId === chat.userId,
+      );
+
+      return [
+        ...acc,
+        {
+          ...chat,
+          unreadMessageCount: unreadChat ? unreadChat._count : 0,
+        },
+      ];
+    }, []);
+
+    return userChatsWithUnreadInfo;
+  }
+
+  getChatMessages(userId: number, peerId: number) {
+    return this.messageService.getUserChatMessages(userId, +peerId);
+  }
+
+  getUnreadChatCountInfo(userId: number) {
+    return this.messageService.getUnreadChatInfo(userId);
   }
 }

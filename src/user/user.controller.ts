@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   ParseArrayPipe,
-  ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -22,11 +21,12 @@ import { PostService } from 'src/post/post.service';
 import {
   CreateMessageDto,
   FollowDto,
-  GetChatDto,
   UnfollowDto,
   RequestFriendshipDto,
   UpdateFriendshipDto,
+  GetChatsQueryDto,
 } from './dto';
+import { FriendshipStatus } from './user.constants';
 import { UserService } from './user.service';
 
 //@TODO: seperate nested routes?
@@ -86,11 +86,26 @@ export class UserController {
   }
 
   @Get(':userId/chats')
-  getChat(@UserId() userId: number, @Query() query: GetChatDto) {
-    const { peerId } = query;
-    return peerId
-      ? this.messageService.getUserChat(userId, +peerId) // @TODO: separate as get messages?
-      : this.messageService.getUserChats(userId);
+  getChats(@UserId() userId: number, @Query() query: GetChatsQueryDto) {
+    const { count } = query;
+    if (!count) {
+      return this.messageService.getUserChats(userId);
+      // return this.userService.getChats(userId);
+    }
+
+    const shouldCountUnread = count.some((item) => item === 'unread');
+
+    if (shouldCountUnread) {
+      return this.userService.getUnreadChatCountInfo(userId);
+    }
+  }
+
+  @Get(':userId/messages')
+  getMessages(
+    @UserId() userId: number,
+    @Query('peerId', ParseIntPipe) peerId: number,
+  ) {
+    return this.userService.getChatMessages(userId, peerId);
   }
 
   @Post(':userId/messages')
@@ -102,6 +117,14 @@ export class UserController {
       ...createMessageDto,
       senderId: userId,
     });
+  }
+
+  @Patch(':userId/messages')
+  updateMessagesAsRead(
+    @UserId() userId: number,
+    @Body('peerId') peerId: number,
+  ) {
+    return this.messageService.updateMessagesAsRead(userId, peerId);
   }
 
   @Get(':userId/followers')
@@ -128,6 +151,17 @@ export class UserController {
     @Body('followingId', ParseIntPipe) followingId: UnfollowDto['followingId'],
   ) {
     return this.userService.unfollow({ followingId, followerId: userId });
+  }
+
+  @Get(':userId/friends')
+  getFriendships(
+    @UserId() userId: number,
+    @Query('status', ParseIntPipe) status: FriendshipStatus,
+  ) {
+    if (status === FriendshipStatus.REQUESTED) {
+      // @TODO: make getFriendshipRequests generic?
+      return this.userService.getFriendshipRequests(userId);
+    }
   }
 
   @Post(':userId/friends')
@@ -176,9 +210,8 @@ export class UserController {
     });
   }
 
-  // make it generic?
   @Patch(':userId/notifications')
-  setNotificationsAsViewed(@UserId() userId: number) {
-    return this.notificationService.updateNotificationIsViewed(userId, true);
+  updateNotificationsAsViewed(@UserId() userId: number) {
+    return this.notificationService.updateNotificationsAsViewed(userId);
   }
 }

@@ -15,16 +15,15 @@ export class InitService {
       this.messageService.getUnreadChatInfo(userId),
     ]);
     const {
-      _count: { receivedNotifications },
+      _count: { receivedNotifications, friends },
       ...user
     } = userConfig;
 
     return {
       user,
-      _count: {
-        receivedNotifications,
-        receivedMessages: unreadChatInfo.length,
-      },
+      unviewedNotificationCount: receivedNotifications,
+      friendshipRequestCount: friends,
+      unreadChatInfo,
     };
   }
 }
