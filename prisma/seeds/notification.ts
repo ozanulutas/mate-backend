@@ -7,9 +7,9 @@ export async function notification(prisma: PrismaClient) {
     data: [
       {
         id: 1,
-        actorId: 3,
-        entityId: 1,
-        notificationTypeId: NotificationType.FRIENDSHIP_REQUESTED,
+        actorId: 1,
+        entityId: 2,
+        notificationTypeId: NotificationType.FOLLOWED,
         createdAt: new Date('2023-02-12 15:04:13.690'),
       },
       {

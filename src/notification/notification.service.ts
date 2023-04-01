@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { SoketClientProvider } from 'src/socket/socket-client.provider';
-import { SocketEvent } from 'src/socket/socket.constants';
+import { SocketClientProvider } from 'src/socket/socket-client.provider';
 import {
   CreateNotificationDto,
   GetNotificationCountDto,
   RemoveNotificationDto,
 } from './dto';
 import { NotificationRepository } from './notification.repository';
-import { NotificationType } from './notification.constants';
 
 @Injectable()
 export class NotificationService {
   constructor(
     private notificationRepository: NotificationRepository,
-    private socketProivder: SoketClientProvider,
+    private socketClient: SocketClientProvider,
   ) {}
 
   getUserNotifications(userId: number) {
@@ -27,12 +25,9 @@ export class NotificationService {
       createNotificationDto,
     );
 
-    if (notificationTypeId !== NotificationType.FRIENDSHIP_REQUESTED) {
-      this.socketProivder.socket.emit(
-        SocketEvent.NEW_NOTIFICATION,
-        notifierIds[0],
-      );
-    }
+    this.socketClient.eventEmitter.newNotification(notifierIds[0], {
+      type: notificationTypeId,
+    });
 
     return result;
   }

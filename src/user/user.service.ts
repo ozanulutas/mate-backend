@@ -13,16 +13,18 @@ import {
 } from './dto';
 import { UserRepository } from './user.repository';
 import { CredentialsTakenException } from 'src/config/exceptions';
-import { FriendshipRequestedEvent, FriendshipRespondedEvent } from './events';
+import { FriendshipRespondedEvent } from './events';
 import { Event } from './user.constants';
 import { MessageService } from 'src/message/message.service';
+import { SocketClientProvider } from 'src/socket/socket-client.provider';
 
 @Injectable()
 export class UserService {
   constructor(
     private userRepository: UserRepository,
-    private eventEmitter: EventEmitter2,
     private messageService: MessageService,
+    private eventEmitter: EventEmitter2,
+    private socketClient: SocketClientProvider,
   ) {}
 
   getUsers() {
@@ -105,9 +107,8 @@ export class UserService {
       requestFriendshipDto,
     );
 
-    this.eventEmitter.emit(
-      Event.FRIENDSHIP_REQUESTED,
-      new FriendshipRequestedEvent(requestFriendshipDto),
+    this.socketClient.eventEmitter.newFriendshipRequest(
+      requestFriendshipDto.receiverId,
     );
 
     return result;
@@ -126,17 +127,8 @@ export class UserService {
     return result;
   }
 
-  async deleteFriendship(deleteFriendshipDto: DeleteFriendshipDto) {
-    const result = await this.userRepository.deleteFriendship(
-      deleteFriendshipDto,
-    );
-
-    this.eventEmitter.emit(
-      Event.FRIENDSHIP_RESPONDED,
-      new FriendshipRespondedEvent(deleteFriendshipDto),
-    );
-
-    return result;
+  deleteFriendship(deleteFriendshipDto: DeleteFriendshipDto) {
+    return this.userRepository.deleteFriendship(deleteFriendshipDto);
   }
 
   async getChats(userId: number) {

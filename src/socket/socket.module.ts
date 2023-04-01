@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { SoketClientProvider } from './socket-client.provider';
+import { SocketClientProvider } from './socket-client.provider';
 
 @Module({
-  providers: [SoketClientProvider],
-  exports: [SoketClientProvider],
+  providers: [SocketClientProvider],
+  exports: [SocketClientProvider],
 })
 export class SocketModule {}
