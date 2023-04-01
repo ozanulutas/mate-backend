@@ -24,7 +24,7 @@ export async function message(prisma: PrismaClient) {
       },
       {
         id: 4,
-        senderId: 1,
+        senderId: 2,
         text: 'senden',
         createdAt: new Date('2023-02-04 12:03:27.651'),
       },
@@ -73,7 +73,7 @@ export async function message(prisma: PrismaClient) {
       },
       {
         id: 12,
-        senderId: 1,
+        senderId: 3,
         text: 'iyi iyi',
         createdAt: new Date('2023-02-04 12:03:31.651'),
       },
@@ -84,6 +84,7 @@ export async function message(prisma: PrismaClient) {
         text: 'yeah',
         createdAt: new Date('2023-02-04 12:03:24.651'),
       },
+
       {
         id: 14,
         senderId: 5,
