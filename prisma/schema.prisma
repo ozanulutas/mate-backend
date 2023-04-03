@@ -175,7 +175,6 @@ model Friend {
   receiver         User              @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
   friendshipStatus FriendshipStatus? @relation(fields: [friendshipStatusId], references: [id], onDelete: SetNull)
 
-  @@unique([senderId, receiverId])
   @@map("friend")
 }
 
