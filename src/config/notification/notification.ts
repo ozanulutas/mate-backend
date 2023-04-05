@@ -15,7 +15,6 @@ type CreatePopupParams = {
   };
 };
 
-// @TODO: change name to toast
 export const createToast = (params: CreateToastParams) => ({
   toast: {
     text: '',

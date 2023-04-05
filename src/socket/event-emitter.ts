@@ -3,6 +3,7 @@ import {
   FriendshipRemovedDto,
   FriendshipStatusChangedDto,
   NewNotificationDto,
+  NewMessageDto,
 } from './dto';
 import { SocketEvent } from './socket.constants';
 import { Socket } from 'socket.io-client';
@@ -19,6 +20,10 @@ export class EventEmitter {
       notifierId,
       ...newNotificationDto,
     });
+  }
+
+  newMessage(newMessageDto: NewMessageDto) {
+    this.socket.emit(SocketEvent.NEW_MESSAGE, newMessageDto);
   }
 
   newFriendshipRequest(receiverId: number, senderId: number) {

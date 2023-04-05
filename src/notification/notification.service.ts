@@ -18,9 +18,9 @@ export class NotificationService {
     return this.notificationRepository.getUserNotifications(userId);
   }
 
+  // @TODO: create a createAndSendNotification method to decouple the emit
   async createNotification(createNotificationDto: CreateNotificationDto) {
     const { notifierIds, notificationTypeId } = createNotificationDto;
-
     const result = await this.notificationRepository.createNotification(
       createNotificationDto,
     );
