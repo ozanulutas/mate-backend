@@ -24,4 +24,5 @@ export async function comment(prisma: PrismaClient) {
       },
     ],
   });
+  await prisma.$queryRaw`SELECT setval(pg_get_serial_sequence('comment', 'id'), coalesce(max(id)+1, 1), false) FROM comment;`;
 }

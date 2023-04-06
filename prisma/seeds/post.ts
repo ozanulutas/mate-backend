@@ -46,4 +46,5 @@ export async function post(prisma: PrismaClient) {
       },
     ],
   });
+  await prisma.$queryRaw`SELECT setval(pg_get_serial_sequence('post', 'id'), coalesce(max(id)+1, 1), false) FROM post;`;
 }
