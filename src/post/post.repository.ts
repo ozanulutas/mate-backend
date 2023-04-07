@@ -1,9 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { FriendshipStatus } from 'src/user/user.constants';
+import { CreatePostDto } from './dto';
 
 @Injectable()
 export class PostRepository {
   constructor(private prisma: PrismaService) {}
+
+  createPost(createPostDto: CreatePostDto) {
+    return this.prisma.post.create({
+      data: createPostDto,
+      select: { id: true },
+    });
+  }
 
   getPostsByUserId(userId: number) {
     return this.prisma.post.findMany({
@@ -33,11 +42,35 @@ export class PostRepository {
     return this.prisma.post.findMany({
       where: {
         user: {
-          followers: {
-            some: {
-              followerId: userId,
+          OR: [
+            {
+              followers: {
+                some: {
+                  followerId: userId,
+                },
+              },
             },
-          },
+            {
+              OR: [
+                {
+                  friends: {
+                    some: {
+                      friendshipStatusId: FriendshipStatus.ACCEPTED,
+                      senderId: userId,
+                    },
+                  },
+                },
+                {
+                  symmetricFriends: {
+                    some: {
+                      friendshipStatusId: FriendshipStatus.ACCEPTED,
+                      receiverId: userId,
+                    },
+                  },
+                },
+              ],
+            },
+          ],
         },
       },
       select: {
