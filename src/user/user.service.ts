@@ -3,20 +3,29 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import {
+  AcceptFriendshipDto,
   CreateUserDto,
   DeleteFriendshipDto,
   FollowDto,
   RequestFriendshipDto,
   SearchDto,
   UnfollowDto,
-  UpdateFriendshipDto,
 } from './dto';
 import { UserRepository } from './user.repository';
-import { CredentialsTakenException } from 'src/config/exceptions';
+import {
+  CredentialsTakenException,
+  DuplicatedFriendshipRequestException,
+  FriendshipRequestNotFoundException,
+} from 'src/config/exceptions';
 import { FriendshipRespondedEvent } from './events';
 import { Event } from './user.constants';
 import { MessageService } from 'src/message/message.service';
 import { SocketClientProvider } from 'src/socket/socket-client.provider';
+import { NotificationService } from 'src/notification/notification.service';
+import { NotificationType } from 'src/notification/notification.constants';
+import { PostService } from 'src/post/post.service';
+import { CreatePostDto } from 'src/post/dto';
+import { createToast } from 'src/config/notification/notification';
 
 @Injectable()
 export class UserService {
@@ -25,6 +34,8 @@ export class UserService {
     private messageService: MessageService,
     private eventEmitter: EventEmitter2,
     private socketClient: SocketClientProvider,
+    private notificationService: NotificationService,
+    private postService: PostService,
   ) {}
 
   getUsers() {
@@ -39,14 +50,10 @@ export class UserService {
     const { followers, friends, symmetricFriends, ...user } =
       await this.userRepository.getUserById(id, requesterId);
 
-    const [friendshipStatusWithMe] = [...friends, ...symmetricFriends].map(
-      ({ friendshipStatusId }) => friendshipStatusId,
-    );
-
     const normalizedUser = {
       ...user,
       categories: user?.categories.map(({ category }) => category),
-      friendshipStatusWithMe: friendshipStatusWithMe ?? null,
+      friendshipInfo: friends[0] ?? symmetricFriends[0] ?? null,
       isFollowedByMe: followers.some(
         ({ followerId }) => followerId === requesterId,
       ),
@@ -90,8 +97,18 @@ export class UserService {
     }
   }
 
-  follow(followDto: FollowDto) {
-    return this.userRepository.follow(followDto);
+  async follow(followDto: FollowDto) {
+    const { followerId, followingId } = followDto;
+    const result = await this.userRepository.follow(followDto);
+
+    await this.notificationService.createNotification({
+      actorId: followerId,
+      entityId: followingId,
+      notificationTypeId: NotificationType.FOLLOWED,
+      notifierIds: [followingId],
+    });
+
+    return result;
   }
 
   unfollow(unfollowDto: UnfollowDto) {
@@ -103,32 +120,50 @@ export class UserService {
   }
 
   async requestFriendship(requestFriendshipDto: RequestFriendshipDto) {
+    const { receiverId, senderId } = requestFriendshipDto;
+    const [requestedFriendship] =
+      await this.userRepository.getFriendshipRequest(senderId, receiverId);
+
+    if (requestedFriendship?.id) {
+      throw new DuplicatedFriendshipRequestException();
+    }
+
     const result = await this.userRepository.requestFriendship(
       requestFriendshipDto,
     );
 
-    this.socketClient.eventEmitter.newFriendshipRequest(
-      requestFriendshipDto.receiverId,
-    );
+    this.socketClient.eventEmitter.newFriendshipRequest(receiverId, senderId);
 
     return result;
   }
 
-  async updateFriendship(updateFriendshipDto: UpdateFriendshipDto) {
-    const result = await this.userRepository.updateFriendship(
-      updateFriendshipDto,
+  async acceptFriendship(acceptFriendshipDto: AcceptFriendshipDto) {
+    const result = await this.userRepository.acceptFriendship(
+      acceptFriendshipDto,
     );
+
+    if (result.count === 0) {
+      throw new FriendshipRequestNotFoundException();
+    }
 
     this.eventEmitter.emit(
       Event.FRIENDSHIP_RESPONDED,
-      new FriendshipRespondedEvent(updateFriendshipDto),
+      new FriendshipRespondedEvent(acceptFriendshipDto),
     );
 
     return result;
   }
 
-  deleteFriendship(deleteFriendshipDto: DeleteFriendshipDto) {
-    return this.userRepository.deleteFriendship(deleteFriendshipDto);
+  async deleteFriendship(deleteFriendshipDto: DeleteFriendshipDto) {
+    const result = await this.userRepository.deleteFriendship(
+      deleteFriendshipDto,
+    );
+
+    if (result.count > 0) {
+      this.socketClient.eventEmitter.friendshipRemoved(deleteFriendshipDto);
+    }
+
+    return result;
   }
 
   async getChats(userId: number) {
@@ -162,5 +197,12 @@ export class UserService {
 
   getUnreadChatCountInfo(userId: number) {
     return this.messageService.getUnreadChatInfo(userId);
+  }
+
+  async createPost(createPostDto: CreatePostDto) {
+    return {
+      data: await this.postService.createPost(createPostDto),
+      ...createToast({ text: 'Post is published.' }),
+    };
   }
 }

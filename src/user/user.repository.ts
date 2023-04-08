@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
+  AcceptFriendshipDto,
   CreateUserDto,
   DeleteFriendshipDto,
   FollowDto,
   RequestFriendshipDto,
   SearchDto,
   UnfollowDto,
-  UpdateFriendshipDto,
 } from './dto';
 import { FriendshipStatus } from './user.constants';
 
@@ -71,6 +71,8 @@ export class UserRepository {
           },
           select: {
             friendshipStatusId: true,
+            receiverId: true,
+            senderId: true,
           },
         },
         symmetricFriends: {
@@ -79,6 +81,8 @@ export class UserRepository {
           },
           select: {
             friendshipStatusId: true,
+            receiverId: true,
+            senderId: true,
           },
         },
       },
@@ -215,6 +219,23 @@ export class UserRepository {
     });
   }
 
+  getFriendshipRequest(senderId: number, receiverId: number) {
+    return this.prisma.friend.findMany({
+      where: {
+        OR: [
+          { receiverId, senderId },
+          { receiverId: senderId, senderId: receiverId },
+        ],
+        friendshipStatusId: FriendshipStatus.REQUESTED,
+      },
+      select: {
+        id: true,
+        receiverId: true,
+        senderId: true,
+      },
+    });
+  }
+
   requestFriendship({ senderId, receiverId }: RequestFriendshipDto) {
     return this.prisma.friend.create({
       data: {
@@ -224,24 +245,21 @@ export class UserRepository {
       },
       select: {
         id: true,
+        senderId: true,
+        receiverId: true,
+        friendshipStatusId: true,
       },
     });
   }
 
-  updateFriendship({
-    senderId,
-    receiverId,
-    friendshipStatusId,
-  }: UpdateFriendshipDto) {
+  acceptFriendship({ senderId, receiverId }: AcceptFriendshipDto) {
     return this.prisma.friend.updateMany({
       where: {
-        OR: [
-          { receiverId, senderId },
-          { receiverId: senderId, senderId: receiverId },
-        ],
+        receiverId,
+        senderId,
       },
       data: {
-        friendshipStatusId,
+        friendshipStatusId: FriendshipStatus.ACCEPTED,
       },
     });
   }

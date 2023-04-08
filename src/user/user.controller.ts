@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   ParseArrayPipe,
+  ParseEnumPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -23,13 +24,14 @@ import {
   FollowDto,
   UnfollowDto,
   RequestFriendshipDto,
-  UpdateFriendshipDto,
   GetChatsQueryDto,
+  AcceptFriendshipDto,
 } from './dto';
-import { FriendshipStatus } from './user.constants';
+import { FriendshipRemoveAction, FriendshipStatus } from './user.constants';
 import { UserService } from './user.service';
 
 //@TODO: seperate nested routes?
+//@TODO: replace @UserId() with @User('userId') for security
 @UseGuards(JwtGuard)
 @Controller('users')
 export class UserController {
@@ -83,6 +85,11 @@ export class UserController {
   @Get(':userId/posts')
   getPosts(@UserId() userId: number) {
     return this.postService.getPostsByUserId(userId);
+  }
+
+  @Post(':userId/posts')
+  createPosts(@UserId() userId: number, @Body('text') text: string) {
+    return this.userService.createPost({ userId, text });
   }
 
   @Get(':userId/chats')
@@ -176,11 +183,11 @@ export class UserController {
   @Patch(':userId/friends')
   updateFriendship(
     @UserId() userId: number,
-    @Body() updateFriendshipDto: UpdateFriendshipDto,
+    @Body() acceptFriendshipDto: AcceptFriendshipDto,
   ) {
-    return this.userService.updateFriendship({
-      ...updateFriendshipDto,
-      senderId: userId,
+    return this.userService.acceptFriendship({
+      ...acceptFriendshipDto,
+      receiverId: userId,
     });
   }
 
@@ -189,8 +196,14 @@ export class UserController {
     @UserId() userId: number,
     @Body('receiverId', ParseIntPipe)
     receiverId: RequestFriendshipDto['receiverId'],
+    @Body('removeAction', new ParseEnumPipe(FriendshipRemoveAction))
+    removeAction: FriendshipRemoveAction,
   ) {
-    return this.userService.deleteFriendship({ senderId: userId, receiverId });
+    return this.userService.deleteFriendship({
+      senderId: userId,
+      receiverId,
+      removeAction,
+    });
   }
 
   @Get(':userId/notifications')
