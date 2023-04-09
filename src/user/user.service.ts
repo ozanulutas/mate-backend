@@ -119,6 +119,18 @@ export class UserService {
     return this.userRepository.getFriendshipRequests(receiverId);
   }
 
+  async getFriends(userId: number, name = '') {
+    const { friends, symmetricFriends } = await this.userRepository.getFriends(
+      userId,
+      name,
+    );
+
+    return [
+      ...friends.map(({ sender }) => sender),
+      ...symmetricFriends.map(({ receiver }) => receiver),
+    ];
+  }
+
   async requestFriendship(requestFriendshipDto: RequestFriendshipDto) {
     const { receiverId, senderId } = requestFriendshipDto;
     const [requestedFriendship] =

@@ -219,6 +219,52 @@ export class UserRepository {
     });
   }
 
+  getFriends(userId: number, name = '') {
+    return this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        friends: {
+          where: {
+            sender: {
+              username: {
+                contains: name,
+              },
+            },
+            friendshipStatusId: FriendshipStatus.ACCEPTED,
+          },
+          select: {
+            sender: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+        symmetricFriends: {
+          where: {
+            receiver: {
+              username: {
+                contains: name,
+              },
+            },
+            friendshipStatusId: FriendshipStatus.ACCEPTED,
+          },
+          select: {
+            receiver: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
   getFriendshipRequest(senderId: number, receiverId: number) {
     return this.prisma.friend.findMany({
       where: {

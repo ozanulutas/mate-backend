@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   ParseArrayPipe,
+  ParseBoolPipe,
   ParseEnumPipe,
   ParseIntPipe,
   Patch,
@@ -26,6 +27,7 @@ import {
   RequestFriendshipDto,
   GetChatsQueryDto,
   AcceptFriendshipDto,
+  GetFriendshipsQuery,
 } from './dto';
 import { FriendshipRemoveAction, FriendshipStatus } from './user.constants';
 import { UserService } from './user.service';
@@ -92,19 +94,21 @@ export class UserController {
     return this.userService.createPost({ userId, text });
   }
 
+  // @TODO: handle conditions in service
   @Get(':userId/chats')
   getChats(@UserId() userId: number, @Query() query: GetChatsQueryDto) {
     const { count } = query;
-    if (!count) {
-      return this.messageService.getUserChats(userId);
-      // return this.userService.getChats(userId);
+
+    if (count) {
+      const shouldCountUnread = count.some((item) => item === 'unread');
+
+      if (shouldCountUnread) {
+        return this.userService.getUnreadChatCountInfo(userId);
+      }
     }
 
-    const shouldCountUnread = count.some((item) => item === 'unread');
-
-    if (shouldCountUnread) {
-      return this.userService.getUnreadChatCountInfo(userId);
-    }
+    return this.messageService.getUserChats(userId);
+    // return this.userService.getChats(userId);
   }
 
   @Get(':userId/messages')
@@ -163,11 +167,16 @@ export class UserController {
   @Get(':userId/friends')
   getFriendships(
     @UserId() userId: number,
-    @Query('status', ParseIntPipe) status: FriendshipStatus,
+    @Query() query: GetFriendshipsQuery,
   ) {
+    const { status, name } = query;
+
     if (status === FriendshipStatus.REQUESTED) {
-      // @TODO: make getFriendshipRequests generic?
       return this.userService.getFriendshipRequests(userId);
+    }
+
+    if (status === FriendshipStatus.ACCEPTED) {
+      return this.userService.getFriends(userId, name);
     }
   }
 
