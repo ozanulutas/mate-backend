@@ -79,7 +79,6 @@ model User {
   followers              Follow[]          @relation("following")
   followings             Follow[]          @relation("follower")
   categories             UserCategory[]
-  selectedLocation       SelectedLocation?
   posts                  Post[]
   comments               Comment[]
   sentMessages           Message[]
@@ -124,29 +123,17 @@ model Location {
   userId      Int?                                 @map("user_id")
   name        String
   coordinates Unsupported("geometry(Point, 4326)")
+  isSelected  Boolean                              @default(false) @map("is_selected")
   city        String? // @TODO: ayrı tablodan al
   country     String? // @TODO: ayrı tablodan al
   info        String?
   createdAt   DateTime                             @default(now()) @map("created_at")
   updatedAt   DateTime?                            @updatedAt @map("updated_at")
 
-  user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  selectedLocation SelectedLocation?
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([coordinates], name: "location_idx", type: Gist)
   @@map("location")
-}
-
-// @TODO: SelectedLocation için ayrı tablo gerekli mi?
-model SelectedLocation {
-  id         Int @id @default(autoincrement())
-  userId     Int @unique @map("user_id")
-  locationId Int @unique @map("location_id")
-
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
-
-  @@map("selected_location")
 }
 
 model Follow {
