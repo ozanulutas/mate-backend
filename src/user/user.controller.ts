@@ -3,8 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   ParseArrayPipe,
-  ParseBoolPipe,
   ParseEnumPipe,
   ParseIntPipe,
   Patch,
@@ -28,6 +28,7 @@ import {
   GetChatsQueryDto,
   AcceptFriendshipDto,
   GetFriendshipsQuery,
+  UpdateLocationDto,
 } from './dto';
 import { FriendshipRemoveAction, FriendshipStatus } from './user.constants';
 import { UserService } from './user.service';
@@ -77,6 +78,26 @@ export class UserController {
   @Get(':userId/locations')
   getLocations(@UserId() userId: number) {
     return this.locationService.getLocationsByUserId(userId);
+  }
+
+  @Patch(':userId/locations/:locationId')
+  updateLocation(
+    @UserId() userId: number,
+    @Param('locationId', ParseIntPipe) locationId: number,
+    @Body() updateLocationDto: UpdateLocationDto,
+  ) {
+    return this.locationService.updateLocation(userId, {
+      id: locationId,
+      ...updateLocationDto,
+    });
+  }
+
+  @Delete(':userId/locations/:locationId')
+  removeLocation(
+    @UserId() userId: number,
+    @Param('locationId', ParseIntPipe) locationId: number,
+  ) {
+    return this.locationService.removeLocation(userId, locationId);
   }
 
   @Get(':userId/feed')

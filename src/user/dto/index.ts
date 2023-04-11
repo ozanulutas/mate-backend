@@ -10,3 +10,4 @@ export * from './get-chats-query.dto';
 export * from './accept-friendship.dto';
 export * from './get-friendships-query.dto';
 export * from './user.dto';
+export * from './update-location.dto';

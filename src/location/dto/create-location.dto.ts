@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateLocationDto {
   @IsNotEmpty()
@@ -8,9 +8,7 @@ export class CreateLocationDto {
   @IsNotEmpty()
   coordinates: any; // @TODO: type
 
-  // @IsString()
-  // city: string;
-
-  // @IsString()
-  // country: string;
+  @IsBoolean()
+  @IsOptional()
+  isSelected: boolean;
 }

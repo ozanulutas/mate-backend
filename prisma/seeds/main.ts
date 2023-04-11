@@ -13,7 +13,6 @@ import { notification } from './notification';
 import { notificationType } from './notification-type';
 import { notifier } from './notifier';
 import { post } from './post';
-import { selectedLocation } from './selected-location';
 import { user } from './user';
 import { userCategory } from './user-category';
 
@@ -29,7 +28,6 @@ async function main() {
     await category(prisma);
     await post(prisma);
     await comment(prisma);
-    await selectedLocation(prisma);
     await categoryRelation(prisma);
     await userCategory(prisma);
     await follow(prisma);

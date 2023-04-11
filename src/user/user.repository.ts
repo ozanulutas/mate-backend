@@ -159,11 +159,12 @@ export class UserRepository {
         ) categories
       FROM
         "user" u JOIN location l ON l.user_id = u.id
-        JOIN selected_location sl ON sl.location_id = l.id
+        --JOIN selected_location sl ON sl.location_id = l.id
         JOIN user_category uc ON u.id = uc.user_id
       WHERE
         ST_DWithin((l.coordinates)::geography, ST_MakePoint(${lon}, ${lat}), ${distance}) 
         AND uc.category_id IN (${Prisma.join(categories)})
+        AND l.is_selected = true
       GROUP BY u.id, l.name, l.coordinates
       ORDER BY
         ST_Distance((l.coordinates)::geography, ST_MakePoint(${lon}, ${lat})),
