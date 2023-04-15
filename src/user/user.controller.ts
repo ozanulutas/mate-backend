@@ -32,6 +32,7 @@ import {
 } from './dto';
 import { FriendshipRemoveAction, FriendshipStatus } from './user.constants';
 import { UserService } from './user.service';
+import { CategoryService } from 'src/category/category.service';
 
 //@TODO: seperate nested routes?
 //@TODO: replace @UserId() with @User('userId') for security
@@ -41,6 +42,7 @@ export class UserController {
   constructor(
     private userService: UserService,
     private locationService: LocationService,
+    private categoryService: CategoryService,
     private postService: PostService,
     private messageService: MessageService,
     private notificationService: NotificationService,
@@ -256,5 +258,28 @@ export class UserController {
   @Patch(':userId/notifications')
   updateNotificationsAsViewed(@UserId() userId: number) {
     return this.notificationService.updateNotificationsAsViewed(userId);
+  }
+
+  @Get(':userId/categories')
+  getCategories(@UserId() userId: number) {
+    return this.categoryService.getUserCategories(userId);
+  }
+
+  @Post(':userId/categories')
+  createCategories(
+    @UserId() userId: number,
+    @Body('categoryIds', new ParseArrayPipe({ items: Number }))
+    categoryIds: number[],
+  ) {
+    return this.categoryService.createUserCategories(userId, categoryIds);
+  }
+
+  @Delete(':userId/categories/:userCategoryId')
+  removeCategory(
+    @UserId() userId: number,
+    @Param('userCategoryId', ParseIntPipe)
+    userCategoryId: number,
+  ) {
+    return this.categoryService.removeUserCategory(userId, userCategoryId);
   }
 }

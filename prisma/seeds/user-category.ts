@@ -20,4 +20,5 @@ export async function userCategory(prisma: PrismaClient) {
       { id: 12, userId: 3, categoryId: 11 },
     ],
   });
+  await prisma.$queryRaw`SELECT setval(pg_get_serial_sequence('user_category', 'id'), coalesce(max(id)+1, 1), false) FROM user_category;`;
 }

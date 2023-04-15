@@ -8,6 +8,7 @@ import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
 import { UserService } from './user.service';
 import { SocketModule } from 'src/socket/socket.module';
+import { CategoryModule } from 'src/category/category.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SocketModule } from 'src/socket/socket.module';
     MessageModule,
     NotificationModule,
     SocketModule,
+    CategoryModule,
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository, FriendshipRespondedListener],

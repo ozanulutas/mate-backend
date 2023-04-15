@@ -16,7 +16,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       disableErrorMessages: true,
-      transform: true,
+      // transform: true,
       exceptionFactory: (errors) => {
         console.error(errors);
         return new ValidationException();
