@@ -48,21 +48,25 @@ export class UserController {
     private notificationService: NotificationService,
   ) {}
 
-  @Get('search')
-  search(
+  @Get()
+  getUsers(
     @Query('lon', ParseFloatPipe) lon: number,
     @Query('lat', ParseFloatPipe) lat: number,
     @Query('distance', ParseFloatPipe) distance: number,
     @Query('categories', new ParseArrayPipe({ items: Number }))
     categories: number[],
   ) {
-    return this.userService.search({ lon, lat, distance, categories });
-  }
+    if (lon && lat && distance && categories.length) {
+      return this.userService.search({ lon, lat, distance, categories });
+    }
 
-  @Get()
-  getUsers() {
     return this.userService.getUsers();
   }
+
+  // @Get()
+  // getUsers() {
+  //   return this.userService.getUsers();
+  // }
 
   @Get(':userId')
   getUserById(@UserId() id: number, @User('userId') requesterId: number) {
