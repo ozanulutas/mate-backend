@@ -2,6 +2,7 @@
 
 ## Handling Friendship Records
 
-- If requested create new frindship record
-- If rejected or cancelled remove frindship record
-- If accepted or blocked update frindship record
+- If requested create new frindship record. sender is who requests friendship
+- If rejected or cancelled remove frindship record. sender is who removes friendship
+- If accepted update frindship record. sender is who requests friendship
+- If blocked update or create frindship record

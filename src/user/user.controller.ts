@@ -29,6 +29,7 @@ import {
   AcceptFriendshipDto,
   GetFriendshipsQuery,
   UpdateLocationDto,
+  UpdateUserDto,
 } from './dto';
 import { FriendshipRemoveAction, FriendshipStatus } from './user.constants';
 import { UserService } from './user.service';
@@ -63,14 +64,14 @@ export class UserController {
     return this.userService.getUsers();
   }
 
-  // @Get()
-  // getUsers() {
-  //   return this.userService.getUsers();
-  // }
-
   @Get(':userId')
   getUserById(@UserId() id: number, @User('userId') requesterId: number) {
     return this.userService.getUserById(id, requesterId);
+  }
+
+  @Patch(':userId')
+  updateUser(@UserId() userId: number, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.updateUser(userId, updateUserDto);
   }
 
   @Post(':userId/locations')

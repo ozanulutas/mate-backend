@@ -10,12 +10,15 @@ import {
   RequestFriendshipDto,
   SearchDto,
   UnfollowDto,
+  UpdateUserDto,
 } from './dto';
 import { UserRepository } from './user.repository';
 import {
   CredentialsTakenException,
   DuplicatedFriendshipRequestException,
   FriendshipRequestNotFoundException,
+  IncorrectCredentialsException,
+  ValidationException,
 } from 'src/config/exceptions';
 import { FriendshipRespondedEvent } from './events';
 import { Event } from './user.constants';
@@ -43,7 +46,7 @@ export class UserService {
   }
 
   getUserByEmail(email: string) {
-    return this.userRepository.getUserByEmail(email);
+    return this.userRepository.getUserBy({ email });
   }
 
   async getUserById(id: number, requesterId: number) {
@@ -62,16 +65,38 @@ export class UserService {
     return normalizedUser;
   }
 
-  getUserFollowers(userId: number) {
-    return this.userRepository.getUserFollowers(userId);
-  }
+  async updateUser(userId: number, updateUserDto: UpdateUserDto) {
+    const { oldPassword, password, ...rest } = updateUserDto;
 
-  getUserFollowings(userId: number) {
-    return this.userRepository.getUserFollowings(userId);
-  }
+    if (oldPassword || password) {
+      if (!oldPassword) {
+        throw new ValidationException();
+      }
 
-  getUserConfig(userId: number) {
-    return this.userRepository.getUserConfig(userId);
+      const user = await this.userRepository.getUserBy({ id: userId });
+      const isPasswordMatches = await bcrypt.compare(
+        oldPassword,
+        user.password,
+      );
+
+      if (!isPasswordMatches) {
+        throw new IncorrectCredentialsException();
+      }
+
+      const passwordHash = await bcrypt.hash(password, 10);
+
+      return {
+        data: await this.userRepository.updateUser(userId, {
+          password: passwordHash,
+        }),
+        ...createToast({ text: 'Password is changed.' }),
+      };
+    }
+
+    return {
+      data: await this.userRepository.updateUser(userId, rest),
+      ...createToast({ text: 'Profile is updated.' }),
+    };
   }
 
   search(searchDto: SearchDto) {
@@ -95,6 +120,18 @@ export class UserService {
 
       throw error;
     }
+  }
+
+  getUserFollowers(userId: number) {
+    return this.userRepository.getUserFollowers(userId);
+  }
+
+  getUserFollowings(userId: number) {
+    return this.userRepository.getUserFollowings(userId);
+  }
+
+  getUserConfig(userId: number) {
+    return this.userRepository.getUserConfig(userId);
   }
 
   async follow(followDto: FollowDto) {

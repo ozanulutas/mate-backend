@@ -5,7 +5,14 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { UserDto } from 'src/user/dto';
+
+class User {
+  @IsNumber()
+  id: number;
+
+  @IsString()
+  username: string;
+}
 
 export class NewMessageDto {
   @IsNumber()
@@ -17,10 +24,10 @@ export class NewMessageDto {
   text: string;
 
   @ValidateNested()
-  sender: UserDto;
+  sender: User;
 
   @ValidateNested()
-  receiver: UserDto;
+  receiver: User;
 
   @IsDate()
   @IsNotEmpty()

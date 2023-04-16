@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   AcceptFriendshipDto,
@@ -9,6 +9,7 @@ import {
   RequestFriendshipDto,
   SearchDto,
   UnfollowDto,
+  UpdateUserDto,
 } from './dto';
 import { FriendshipStatus } from './user.constants';
 
@@ -23,6 +24,18 @@ export class UserRepository {
   getUserByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        password: true,
+      },
+    });
+  }
+
+  getUserBy(where: Partial<Pick<User, 'id' | 'email'>>) {
+    return this.prisma.user.findUnique({
+      where,
       select: {
         id: true,
         email: true,
@@ -85,6 +98,18 @@ export class UserRepository {
             senderId: true,
           },
         },
+      },
+    });
+  }
+
+  updateUser(userId: number, updateUserDto: UpdateUserDto) {
+    return this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: updateUserDto,
+      select: {
+        id: true,
       },
     });
   }
