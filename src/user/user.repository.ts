@@ -152,6 +152,15 @@ export class UserRepository {
       select: {
         id: true,
         username: true,
+        location: {
+          where: {
+            isSelected: true,
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         _count: {
           select: {
             receivedNotifications: {

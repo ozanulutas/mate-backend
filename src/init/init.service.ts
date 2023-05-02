@@ -16,6 +16,7 @@ export class InitService {
     ]);
     const {
       _count: { receivedNotifications, friends },
+      location,
       ...user
     } = userConfig;
 
@@ -24,6 +25,7 @@ export class InitService {
       unviewedNotificationCount: receivedNotifications,
       friendshipRequestCount: friends,
       unreadChatInfo,
+      selectedLocation: location[0],
     };
   }
 }
