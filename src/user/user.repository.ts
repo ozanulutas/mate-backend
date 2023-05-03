@@ -158,7 +158,6 @@ export class UserRepository {
           },
           select: {
             id: true,
-            name: true,
           },
         },
         _count: {

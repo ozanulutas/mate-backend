@@ -89,7 +89,7 @@ export class LocationRepository {
         location
       WHERE
         user_id = ${userId}
-      ORDER BY created_at
+      ORDER BY is_selected DESC
     `;
   }
 }
