@@ -56,7 +56,7 @@ export class LocationRepository {
         ${Prisma.raw(fields)}
       WHERE
         id = ${id} AND user_id = ${userId}
-      RETURNING id
+      RETURNING id, name
     `;
   }
 

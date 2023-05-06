@@ -25,7 +25,7 @@ export class InitService {
       unviewedNotificationCount: receivedNotifications,
       friendshipRequestCount: friends,
       unreadChatInfo,
-      selectedLocationId: location[0]?.id,
+      selectedLocation: location[0],
     };
   }
 }
