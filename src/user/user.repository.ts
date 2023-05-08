@@ -152,6 +152,11 @@ export class UserRepository {
       select: {
         id: true,
         username: true,
+        email: true,
+        genderId: true,
+        birthday: true,
+        gsm: true,
+        countryCode: true,
         location: {
           where: {
             isSelected: true,
