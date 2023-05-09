@@ -93,6 +93,10 @@ export class UserService {
       };
     }
 
+    if (!rest.email) {
+      throw new ValidationException();
+    }
+
     return {
       data: await this.userRepository.updateUser(userId, rest),
       ...createToast({ text: 'Profile is updated.' }),
